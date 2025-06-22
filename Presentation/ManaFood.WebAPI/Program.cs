@@ -13,6 +13,12 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "ManaFood API V2");
+    c.RoutePrefix = string.Empty;
+});
+
 // Configure the HTTP request pipeline.
 app.MapOpenApi();
 app.UseSwagger();
