@@ -13,6 +13,9 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+// Aplica migrations automaticamente
+await app.MigrateDbContextAsync();
+
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "ManaFood API V2");

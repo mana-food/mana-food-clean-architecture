@@ -59,7 +59,21 @@ Certifique-se de ter o [.NET 9](https://dotnet.microsoft.com/en-us/download/dotn
     dotnet run --project Presentation/ManaFood.WebAPI/ManaFood.WebAPI.csproj
     ```
 
-### 3. Documentação Complementar
+### 3. Gerar migrations com EF Core
+
+1. Instale a ferramenta do EF:
+
+    ```sh
+    dotnet tool install --global dotnet-ef
+    ```
+
+2. Gere a migration:
+
+    ```sh
+    dotnet ef migrations add NOME_DA_SUA_MIGRATION --project Infrastructure/ManaFood.Infrastructure --startup-project Presentation/ManaFood.WebAPI
+    ```
+
+### 4. Documentação Complementar
 
 #### Documentação Notion:
 ```sh

@@ -13,7 +13,8 @@ public static class ServiceExtensions
                                                 IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("MySql");
-        services.AddDbContext<ApplicationContext>(opt => opt.UseMySQL(connectionString));
+        services.AddDbContext<ApplicationContext>(opt =>
+            opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();

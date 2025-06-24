@@ -12,8 +12,7 @@ public static class ServicesExtensions
     {
         services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
-        services.AddMediatR(cfg =>
-                cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+        services.AddMediatR(Assembly.GetExecutingAssembly());
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
