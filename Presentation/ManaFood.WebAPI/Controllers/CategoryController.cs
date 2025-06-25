@@ -1,11 +1,16 @@
-using ManaFood.Application.UseCases.CategoryUseCase.CreateCategory;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using ManaFood.Application.Dtos;
+using ManaFood.Application.UseCases.CategoryUseCase.Commands.CreateCategory;
+using ManaFood.Application.UseCases.CategoryUseCase.Queries.GetCategoryById;
+using ManaFood.Application.UseCases.CategoryUseCase.Queries.GetAllCategories;
+using ManaFood.Application.UseCases.CategoryUseCase.Commands.UpdateCategory;
+using ManaFood.Application.UseCases.CategoryUseCase.Commands.DeleteCategory;
 
 namespace ManaFood.WebAPI.Controllers
 {
     [ApiController]
-    [Route("api/category")]
+    [Route("api/categories")]
     public class CategoryController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -15,11 +20,46 @@ namespace ManaFood.WebAPI.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<CreateCategoryResponse>> Create(CreateCategoryRequest request, CancellationToken cancellationToken)
+        [HttpGet]
+        public async Task<ActionResult<CategoryDto>> GetAll(CancellationToken cancellationToken)
         {
-            var response = await _mediator.Send(request);
-            return Created();
+            var result = await _mediator.Send(new GetAllCategoriesQuery(), cancellationToken);
+            return Ok(result);
         }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<CategoryDto>> GetById(Guid id, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new GetCategoryByIdQuery(id), cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<CategoryDto>> Create(CreateCategoryCommand command, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(command, cancellationToken);
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<CategoryDto>> Update(Guid id, UpdateCategoryCommand command, CancellationToken cancellationToken)
+        {
+            if (id != command.Id)
+                return BadRequest("Incompatibilidade de ID entre URL e corpo da solicitação");
+
+            var result = await _mediator.Send(command, cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(Guid id, DeleteCategoryCommand command, CancellationToken cancellationToken)
+        {
+            if (id != command.Id)
+                return BadRequest("Incompatibilidade de ID entre URL e corpo da solicitação");
+
+            var result = await _mediator.Send(command, cancellationToken);
+            return Ok(result);
+        }
+
     }
 }

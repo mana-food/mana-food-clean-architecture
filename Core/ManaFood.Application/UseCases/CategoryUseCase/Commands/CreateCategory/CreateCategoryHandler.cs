@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
+using ManaFood.Application.Dtos;
 using ManaFood.Domain.Entities;
 using ManaFood.Domain.Interfaces;
 using MediatR;
 
-namespace ManaFood.Application.UseCases.CategoryUseCase.CreateCategory;
+namespace ManaFood.Application.UseCases.CategoryUseCase.Commands.CreateCategory;
 
-public class CreateCategoryHandler : IRequestHandler<CreateCategoryRequest, CreateCategoryResponse>
+public class CreateCategoryHandler : IRequestHandler<CreateCategoryCommand, CategoryDto>
 {
     private readonly ICategoryRepository _repository;
     private readonly IUnitOfWork _unitOfWork;
@@ -18,7 +19,7 @@ public class CreateCategoryHandler : IRequestHandler<CreateCategoryRequest, Crea
         _mapper = mapper;
     }
 
-    public async Task<CreateCategoryResponse> Handle(CreateCategoryRequest request,
+    public async Task<CategoryDto> Handle(CreateCategoryCommand request,
         CancellationToken cancellationToken)
     {
 
@@ -28,6 +29,6 @@ public class CreateCategoryHandler : IRequestHandler<CreateCategoryRequest, Crea
 
         await _unitOfWork.Commit(cancellationToken);
 
-        return _mapper.Map<CreateCategoryResponse>(category);
+        return _mapper.Map<CategoryDto>(category);
     }
 }

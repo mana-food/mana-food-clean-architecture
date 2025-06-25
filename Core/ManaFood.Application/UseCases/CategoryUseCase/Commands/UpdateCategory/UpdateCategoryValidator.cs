@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 
-namespace ManaFood.Application.UseCases.CategoryUseCase.CreateCategory;
+namespace ManaFood.Application.UseCases.CategoryUseCase.Commands.CreateCategory;
 
-public sealed class CreateCategoryValidator : AbstractValidator<CreateCategoryRequest>
+public sealed class UpdateCategoryValidator : AbstractValidator<CreateCategoryCommand>
 {
-    public CreateCategoryValidator()
+    public UpdateCategoryValidator()
     {
         RuleFor(x => x.Name).NotEmpty().WithMessage("Nome não pode ser vazio.");
         RuleFor(x => x.Name).NotNull().WithMessage("Nome não pode ser nulo.");

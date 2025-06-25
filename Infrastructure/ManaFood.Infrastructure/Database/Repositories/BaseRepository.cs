@@ -40,10 +40,10 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         return entity;
     }
 
-    public void Delete(T entity)
+    public async Task Delete(T entity, CancellationToken cancellationToken)
     {
         entity.Deleted = true;
-        _applicationContext.Remove(entity);
+        _applicationContext.Update(entity);
     }  
 
 }

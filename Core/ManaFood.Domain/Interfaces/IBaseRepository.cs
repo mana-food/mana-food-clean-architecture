@@ -8,5 +8,5 @@ public interface IBaseRepository<T> where T : BaseEntity
     Task<T> GetById(Guid id, CancellationToken cancellationToken);
     Task<T> Create(T entity, CancellationToken cancellationToken);
     Task<T> Update(T entity, CancellationToken cancellationToken);
-    void Delete(T entity);
+    Task Delete(T entity, CancellationToken cancellationToken);
 }
