@@ -17,7 +17,7 @@ public class GetCategoryByIdHandler : IRequestHandler<GetCategoryByIdQuery, Cate
 
     public async Task<CategoryDto> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
     {
-        var categories = await _repository.GetById(request.Id, cancellationToken);
-        return _mapper.Map<CategoryDto>(categories);
+        var category = await _repository.GetById(request.Id, cancellationToken);
+        return _mapper.Map<CategoryDto>(category);
     }
 }
