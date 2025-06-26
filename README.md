@@ -53,7 +53,36 @@ cd mana-food-clean-architecture
 
 Certifique-se de ter o [.NET 9](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) instalado e um banco de dados MySQL rodando.
 
-1. Execute a aplicação:
+1. Navegue até o arquivo de configuração:
+   ```
+   Presentation/ManaFood.WebAPI/appsettings.json
+   ```
+
+2. Localize a seção `ConnectionStrings`:
+   ```json
+   {
+     "ConnectionStrings": {
+       "DefaultConnection": "server=localhost;database=manafood;user=seu_usuario;password=sua_senha;charset=utf8mb4;"
+     }
+   }
+   ```
+
+3. Substitua os valores:
+   - `seu_usuario`: Seu usuário do MySQL
+   - `sua_senha`: Sua senha do MySQL
+   - `localhost`: Endereço do servidor (mantenha se for local)
+   - `manafood`: Nome do banco (será criado automaticamente)
+
+4. Exemplo de configuração:
+   ```json
+   {
+     "ConnectionStrings": {
+       "DefaultConnection": "server=localhost;database=manafood;user=root;password=123456;charset=utf8mb4;"
+     }
+   }
+   ```
+
+5. Execute a aplicação:
 
     ```sh
     dotnet run --project Presentation/ManaFood.WebAPI/ManaFood.WebAPI.csproj
