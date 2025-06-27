@@ -17,7 +17,7 @@ public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryCommand, Unit
     public async Task<Unit> Handle(DeleteCategoryCommand request,
         CancellationToken cancellationToken)
     {
-        var category = await _repository.GetById(request.Id, cancellationToken);
+        var category = await _repository.GetBy(c => c.Id == request.Id, cancellationToken);
 
         if (category == null)
             throw new ArgumentException($"Categoria com ID {request.Id} não encontrada");

@@ -18,7 +18,7 @@ public class ItemConfiguration : IEntityTypeConfiguration<Item>
             .HasMaxLength(100);
         builder.Property(e => e.Description)
             .HasColumnName("description")
-            .IsRequired()
+            .IsRequired(false)
             .HasMaxLength(500);
         builder.Property(e => e.CategoryId)
             .HasColumnName("category_id")

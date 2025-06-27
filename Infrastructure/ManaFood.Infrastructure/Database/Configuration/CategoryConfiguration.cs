@@ -9,7 +9,7 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
     {
         // Aplica configurações base
         builder.ConfigureBaseEntity();
-        
+
         // Configurações específicas
         builder.ToTable("Categories");
         builder.Property(e => e.Name)
