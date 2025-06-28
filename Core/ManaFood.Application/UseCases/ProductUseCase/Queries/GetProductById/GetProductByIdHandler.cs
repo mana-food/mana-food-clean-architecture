@@ -17,7 +17,11 @@ public class GetProductByIdHandler : IRequestHandler<GetProductByIdQuery, Produc
 
     public async Task<ProductDto> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
     {
-        var product = await _repository.GetBy(p => p.Id == request.Id, cancellationToken);
-        return _mapper.Map<ProductDto>(product);
+        var product = await _repository.GetBy(p => p.Id == request.Id && !p.Deleted, cancellationToken, p => p.Items);
+        if (product is null)
+            throw new ArgumentException($"Produto com ID {request.Id} não encontrado");
+        var result = _mapper.Map<ProductDto>(product);
+        result.ItemIds = product.Items.Select(i => i.Id).ToList();
+        return result;
     }
 }

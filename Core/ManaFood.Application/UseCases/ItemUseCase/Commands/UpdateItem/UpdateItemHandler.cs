@@ -21,7 +21,7 @@ public class UpdateItemHandler : IRequestHandler<UpdateItemCommand, ItemDto>
     public async Task<ItemDto> Handle(UpdateItemCommand request,
         CancellationToken cancellationToken)
     {
-        var item = await _repository.GetBy(i => i.Id == request.Id, cancellationToken);
+        var item = await _repository.GetBy(i => i.Id == request.Id && !i.Deleted, cancellationToken);
         
         if (item == null)
             throw new ArgumentException($"Item com ID {request.Id} não encontrado");

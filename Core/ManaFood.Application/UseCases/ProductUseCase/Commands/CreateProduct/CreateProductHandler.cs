@@ -35,6 +35,8 @@ public class CreateProductHandler : IRequestHandler<CreateProductCommand, Produc
 
         await _unitOfWork.Commit(cancellationToken);
 
-        return _mapper.Map<ProductDto>(product);
+        var result = _mapper.Map<ProductDto>(product);
+        result.ItemIds = product.Items.Select(i => i.Id).ToList();
+        return result;
     }
 }

@@ -21,7 +21,7 @@ public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand, Cate
     public async Task<CategoryDto> Handle(UpdateCategoryCommand request,
         CancellationToken cancellationToken)
     {
-        var category = await _repository.GetBy(c => c.Id == request.Id, cancellationToken);
+        var category = await _repository.GetBy(c => c.Id == request.Id && !c.Deleted, cancellationToken);
         
         if (category == null)
             throw new ArgumentException($"Categoria com ID {request.Id} não encontrada");

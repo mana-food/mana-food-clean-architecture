@@ -17,7 +17,7 @@ public class DeleteProductHandler : IRequestHandler<DeleteProductCommand, Unit>
     public async Task<Unit> Handle(DeleteProductCommand request,
         CancellationToken cancellationToken)
     {
-        var product = await _repository.GetBy(p => p.Id == request.Id, cancellationToken);
+        var product = await _repository.GetBy(p => p.Id == request.Id && !p.Deleted, cancellationToken);
 
         if (product == null)
             throw new ArgumentException($"Produto com ID {request.Id} não encontrado");
