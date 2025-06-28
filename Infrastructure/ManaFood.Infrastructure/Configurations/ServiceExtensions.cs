@@ -20,6 +20,7 @@ public static class ServiceExtensions
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IItemRepository, ItemRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
     }
 }
