@@ -4,6 +4,7 @@ using ManaFood.Infrastructure.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ManaFood.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20250628192823_CreateTableOrders")]
+    partial class CreateTableOrders
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -128,22 +131,23 @@ namespace ManaFood.Infrastructure.Migrations
                         .HasColumnType("tinyint(1)")
                         .HasColumnName("deleted");
 
-                    b.Property<DateTime?>("OrderConfirmationTime")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("order_confirmation_time");
-
                     b.Property<int>("OrderStatus")
                         .HasColumnType("int")
                         .HasColumnName("order_status");
 
-                    b.Property<int>("PaymentMethod")
+                    b.Property<DateTime>("OrderTime")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("order_time");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("int")
+                        .HasColumnType("varchar(50)")
                         .HasColumnName("payment_method");
 
                     b.Property<double>("TotalAmount")
                         .HasColumnType("double")
-                        .HasColumnName("total_amount");
+                        .HasColumnName("unit_price");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime(6)")
@@ -156,50 +160,6 @@ namespace ManaFood.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Orders", (string)null);
-                });
-
-            modelBuilder.Entity("ManaFood.Domain.Entities.OrderProduct", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("char(36)");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("char(36)")
-                        .HasColumnName("order_id");
-
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("char(36)")
-                        .HasColumnName("product_id");
-
-                    b.Property<double>("Quantity")
-                        .HasColumnType("double")
-                        .HasColumnName("quantity");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<Guid>("UpdatedBy")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("OrderId", "ProductId");
-
-                    b.ToTable("order_products", (string)null);
                 });
 
             modelBuilder.Entity("ManaFood.Domain.Entities.Product", b =>
@@ -313,6 +273,23 @@ namespace ManaFood.Infrastructure.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
+            modelBuilder.Entity("order_products", b =>
+                {
+                    b.Property<Guid>("order_id")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("product_id")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("order_id", "product_id");
+
+                    b.HasIndex("order_id");
+
+                    b.HasIndex("product_id");
+
+                    b.ToTable("order_products", (string)null);
+                });
+
             modelBuilder.Entity("product_items", b =>
                 {
                     b.Property<Guid>("product_id")
@@ -341,25 +318,6 @@ namespace ManaFood.Infrastructure.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("ManaFood.Domain.Entities.OrderProduct", b =>
-                {
-                    b.HasOne("ManaFood.Domain.Entities.Order", "Order")
-                        .WithMany("Products")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ManaFood.Domain.Entities.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("ManaFood.Domain.Entities.Product", b =>
                 {
                     b.HasOne("ManaFood.Domain.Entities.Category", "Category")
@@ -369,6 +327,21 @@ namespace ManaFood.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("order_products", b =>
+                {
+                    b.HasOne("ManaFood.Domain.Entities.Order", null)
+                        .WithMany()
+                        .HasForeignKey("order_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ManaFood.Domain.Entities.Product", null)
+                        .WithMany()
+                        .HasForeignKey("product_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("product_items", b =>
@@ -384,11 +357,6 @@ namespace ManaFood.Infrastructure.Migrations
                         .HasForeignKey("product_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("ManaFood.Domain.Entities.Order", b =>
-                {
-                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

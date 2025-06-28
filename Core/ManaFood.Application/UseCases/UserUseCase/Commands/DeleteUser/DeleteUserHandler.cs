@@ -20,7 +20,7 @@ public class DeleteUserHandler : IRequestHandler<DeleteUserCommand, Unit>
         var user = await _repository.GetBy(c => c.Id == request.Id && !c.Deleted, cancellationToken);
 
         if (user == null)
-            throw new ArgumentException($"Categoria com ID {request.Id} não encontrada");
+            throw new ArgumentException($"Usuário com ID {request.Id} não encontrado");
 
 
         user.Deleted = true;

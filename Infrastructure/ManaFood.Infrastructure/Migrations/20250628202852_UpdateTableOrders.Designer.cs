@@ -4,6 +4,7 @@ using ManaFood.Infrastructure.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ManaFood.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20250628202852_UpdateTableOrders")]
+    partial class UpdateTableOrders
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -129,6 +132,7 @@ namespace ManaFood.Infrastructure.Migrations
                         .HasColumnName("deleted");
 
                     b.Property<DateTime?>("OrderConfirmationTime")
+                        .IsRequired()
                         .HasColumnType("datetime(6)")
                         .HasColumnName("order_confirmation_time");
 
