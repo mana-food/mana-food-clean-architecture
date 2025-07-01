@@ -42,21 +42,17 @@ namespace ManaFood.WebAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<CategoryDto>> Update(Guid id, UpdateCategoryCommand command, CancellationToken cancellationToken)
+        public async Task<ActionResult<CategoryDto>> Update(Guid id, UpdateCategoryCommand commandBody, CancellationToken cancellationToken)
         {
-            if (id != command.Id)
-                return BadRequest("Incompatibilidade de ID entre URL e corpo da solicitação");
-
+            var command = new UpdateCategoryWithIdCommand(id, commandBody.Name);
             var result = await _mediator.Send(command, cancellationToken);
             return Ok(result);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(Guid id, DeleteCategoryCommand command, CancellationToken cancellationToken)
+        public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
-            if (id != command.Id)
-                return BadRequest("Incompatibilidade de ID entre URL e corpo da solicitação");
-
+            var command = new DeleteCategoryCommand(id);
             var result = await _mediator.Send(command, cancellationToken);
             return Ok(result);
         }

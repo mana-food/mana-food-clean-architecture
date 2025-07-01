@@ -5,7 +5,7 @@ using MediatR;
 
 namespace ManaFood.Application.UseCases.CategoryUseCase.Commands.UpdateCategory;
 
-public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand, CategoryDto>
+public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryWithIdCommand, CategoryDto>
 {
     private readonly ICategoryRepository _repository;
     private readonly IUnitOfWork _unitOfWork;
@@ -18,7 +18,7 @@ public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand, Cate
         _mapper = mapper;
     }
 
-    public async Task<CategoryDto> Handle(UpdateCategoryCommand request,
+    public async Task<CategoryDto> Handle(UpdateCategoryWithIdCommand request,
         CancellationToken cancellationToken)
     {
         var category = await _repository.GetBy(c => c.Id == request.Id && !c.Deleted, cancellationToken);
