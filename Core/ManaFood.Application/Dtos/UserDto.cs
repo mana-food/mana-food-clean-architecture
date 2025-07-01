@@ -2,9 +2,9 @@
 
 public record UserDto : BaseDto
 {
-    public string Email { get; set; }
-    public string Name { get; init; }
-    public string Cpf { get; set; }
-    public DateOnly Birthday { get; set; }
-    public int UserType { get; set; } = default;
+    public required string Email { get; init; }
+    public required string Name { get; init; }
+    public required string Cpf { get; init; }
+    public required DateOnly Birthday { get; init; }
+    public required int UserType { get; init; }
 }

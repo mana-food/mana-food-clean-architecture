@@ -20,7 +20,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         return await _applicationContext.Set<T>().Where(x => !x.Deleted).ToListAsync(cancellationToken);
     }
     
-    public async Task<T> GetBy(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken, params Expression<Func<T, object>>[] includes)
+    public async Task<T?> GetBy(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken, params Expression<Func<T, object>>[] includes)
     {
         var query = _applicationContext.Set<T>().AsQueryable();
 
@@ -38,7 +38,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<T> Create(T entity, CancellationToken cancellationToken)
+    public Task<T> Create(T entity, CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;
 
@@ -46,21 +46,22 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         entity.CreatedAt = now;
         entity.UpdatedAt = now;
         _applicationContext.Add(entity);
-        return entity;
+        return Task.FromResult(entity);
     }
 
-    public async Task<T> Update(T entity, CancellationToken cancellationToken)
+    public Task<T> Update(T entity, CancellationToken cancellationToken)
     {
         entity.UpdatedAt = DateTime.UtcNow;
         _applicationContext.Update(entity);
-        return entity;
+        return Task.FromResult(entity);
     }
 
-    public async Task Delete(T entity, CancellationToken cancellationToken)
+    public Task Delete(T entity, CancellationToken cancellationToken)
     {
         entity.Deleted = true;
         entity.UpdatedAt = DateTime.UtcNow;
         _applicationContext.Update(entity);
+        return Task.CompletedTask;
     }
 
 }

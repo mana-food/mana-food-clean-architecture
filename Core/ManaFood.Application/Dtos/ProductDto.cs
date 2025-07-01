@@ -2,9 +2,9 @@
 
 public record ProductDto : BaseDto
 {
-    public string Name { get; init; }
-    public string Description { get; set; }
-    public Guid CategoryId { get; set; }
-    public double UnitPrice { get; set; }
-    public List<Guid> ItemIds { get; set; } = new();
+    public required string Name { get; init; }
+    public string? Description { get; init; }
+    public Guid CategoryId { get; init; }
+    public required double UnitPrice { get; init; }
+    public required List<Guid> ItemIds { get; set; } = [];
 }

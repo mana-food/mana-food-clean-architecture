@@ -2,8 +2,8 @@
 
 public record OrderDto : BaseDto
 {
-    public int OrderStatus { get; set; }
-    public double TotalAmount { get; set; }
-    public int PaymentMethod { get; set; }
-    public List<ProductOrderDto> Products { get; set; } = new();
+    public required int OrderStatus { get; init; }
+    public required double TotalAmount { get; init; }
+    public required int PaymentMethod { get; init; }
+    public required List<ProductOrderDto> Products { get; set; } = [];
 }

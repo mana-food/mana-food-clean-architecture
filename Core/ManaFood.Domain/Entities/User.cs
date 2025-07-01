@@ -2,9 +2,9 @@
 
 public class User : BaseEntity
 {
-    public string Email { get; set; }
-    public string Name { get; set; }
-    public string Cpf { get; set; }
+    public required string Email { get; set; }
+    public required string Name { get; set; }
+    public required string Cpf { get; set; }
     public DateOnly Birthday { get; set; }
     public UserType UserType { get; set; }
 }
