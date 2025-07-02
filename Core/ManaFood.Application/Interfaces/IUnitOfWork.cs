@@ -1,4 +1,4 @@
-﻿namespace ManaFood.Domain.Interfaces;
+﻿namespace ManaFood.Application.Interfaces;
 
 public interface IUnitOfWork
 {

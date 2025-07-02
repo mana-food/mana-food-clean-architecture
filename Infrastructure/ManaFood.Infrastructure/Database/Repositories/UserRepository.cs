@@ -1,5 +1,5 @@
 ﻿using ManaFood.Domain.Entities;
-using ManaFood.Domain.Interfaces;
+using ManaFood.Application.Interfaces;
 using ManaFood.Infrastructure.Database.Context;
 
 namespace ManaFood.Infrastructure.Database.Repositories;

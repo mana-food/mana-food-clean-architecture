@@ -1,4 +1,4 @@
-﻿using ManaFood.Domain.Interfaces;
+﻿using ManaFood.Application.Interfaces;
 using MediatR;
 
 namespace ManaFood.Application.UseCases.CategoryUseCase.Commands.DeleteCategory;

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using ManaFood.Application.Dtos;
 using ManaFood.Domain.Entities;
-using ManaFood.Domain.Interfaces;
+using ManaFood.Application.Interfaces;
 using MediatR;
 
 namespace ManaFood.Application.UseCases.OrderUseCase.Commands.UpdateOrder;

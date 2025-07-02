@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
+using ManaFood.Application.Shared;
 using ManaFood.Domain.Entities;
-using ManaFood.Domain.Interfaces;
+using ManaFood.Application.Interfaces;
 using ManaFood.Infrastructure.Database.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +19,25 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
     public async Task<List<T>> GetAll(CancellationToken cancellationToken)
     {
         return await _applicationContext.Set<T>().Where(x => !x.Deleted).ToListAsync(cancellationToken);
+    }
+
+    public async Task<PagedResult<T>> GetAllPaged(int page, int pageSize, CancellationToken cancellationToken)
+    {
+        var query = _applicationContext.Set<T>().Where(x => !x.Deleted);
+        
+        var totalCount = await query.CountAsync(cancellationToken);
+        var data = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return new PagedResult<T>
+        {
+            Data = data,
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize
+        };
     }
     
     public async Task<T?> GetBy(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken, params Expression<Func<T, object>>[] includes)

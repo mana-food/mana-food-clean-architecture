@@ -1,6 +1,6 @@
 ﻿using ManaFood.Domain.Entities;
 
-namespace ManaFood.Domain.Interfaces;
+namespace ManaFood.Application.Interfaces;
 
 public interface IProductRepository : IBaseRepository<Product>
 {

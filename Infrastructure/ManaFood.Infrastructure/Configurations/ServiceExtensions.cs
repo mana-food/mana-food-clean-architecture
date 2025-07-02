@@ -1,4 +1,4 @@
-﻿using ManaFood.Domain.Interfaces;
+﻿using ManaFood.Application.Interfaces;
 using ManaFood.Infrastructure.Database.Context;
 using ManaFood.Infrastructure.Database.Repositories;
 using Microsoft.EntityFrameworkCore;
