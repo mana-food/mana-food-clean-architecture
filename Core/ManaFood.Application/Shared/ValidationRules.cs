@@ -1,6 +1,7 @@
 using FluentValidation;
 
 namespace ManaFood.Application.Shared;
+
 public static class ValidationRules
 {
     public static IRuleBuilderOptions<T, string> RequiredString<T>(this IRuleBuilder<T, string> ruleBuilder, string field)
@@ -15,5 +16,11 @@ public static class ValidationRules
     {
         return ruleBuilder
             .Must(guid => guid != Guid.Empty).WithMessage($"{field} não pode ser um Guid vazio.");
+    }
+    
+    public static IRuleBuilderOptions<T, int> RequiredPagination<T>(this IRuleBuilder<T, int> ruleBuilder, string field)
+    {
+        return ruleBuilder
+            .GreaterThan(0).WithMessage($"{field} deve ser maior que zero.");
     }
 }

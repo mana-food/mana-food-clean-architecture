@@ -21,13 +21,13 @@ namespace ManaFood.WebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<CategoryDto>> GetAll(CancellationToken cancellationToken)
+        public async Task<ActionResult<CategoryDto>> GetAll([FromQuery] GetAllCategoriesQuery query, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new GetAllCategoriesQuery(), cancellationToken);
+            var result = await _mediator.Send(query, cancellationToken);
             return Ok(result);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<ActionResult<CategoryDto>> GetById(Guid id, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new GetCategoryByIdQuery(id), cancellationToken);
@@ -41,7 +41,7 @@ namespace ManaFood.WebAPI.Controllers
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:guid}")]
         public async Task<ActionResult<CategoryDto>> Update(Guid id, UpdateCategoryCommand commandBody, CancellationToken cancellationToken)
         {
             var command = new UpdateCategoryWithIdCommand(id, commandBody.Name);
@@ -49,7 +49,7 @@ namespace ManaFood.WebAPI.Controllers
             return Ok(result);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             var command = new DeleteCategoryCommand(id);

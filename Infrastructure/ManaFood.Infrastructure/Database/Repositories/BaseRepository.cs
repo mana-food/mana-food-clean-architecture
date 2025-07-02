@@ -21,7 +21,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         return await _applicationContext.Set<T>().Where(x => !x.Deleted).ToListAsync(cancellationToken);
     }
 
-    public async Task<PagedResult<T>> GetAllPaged(int page, int pageSize, CancellationToken cancellationToken)
+    public async Task<Paged<T>> GetAllPaged(int page, int pageSize, CancellationToken cancellationToken)
     {
         var query = _applicationContext.Set<T>().Where(x => !x.Deleted);
         
@@ -31,12 +31,10 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
             .Take(pageSize)
             .ToListAsync(cancellationToken);
 
-        return new PagedResult<T>
+        return new Paged<T>
         {
             Data = data,
-            TotalCount = totalCount,
-            Page = page,
-            PageSize = pageSize
+            TotalCount = totalCount
         };
     }
     
