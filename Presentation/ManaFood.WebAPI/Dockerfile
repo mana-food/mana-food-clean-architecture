@@ -1,20 +1,18 @@
-# Etapa 1: build
+# Etapa 1 -> Base
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+WORKDIR /app
+EXPOSE 80
+
+# Etapa 2 -> Build
 FROM mcr.microsoft.com/dotnet/sdk:9.0.301 AS build
 WORKDIR /src
-
-# Copia a solução e todos os arquivos do projeto
 COPY . .
-
-# Restaura as dependências
-RUN dotnet restore ManaFood.sln
-
-# Publica a aplicação
 WORKDIR /src/Presentation/ManaFood.WebAPI
+RUN dotnet restore
 RUN dotnet publish -c Release -o /app/publish
 
-# Etapa 2: runtime
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+# Etapa 3 -> Final
+FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
-EXPOSE 80
 ENTRYPOINT ["dotnet", "ManaFood.WebAPI.dll"]
