@@ -129,23 +129,51 @@ Segue um passo a passo simples para rodar os containers do projeto:
 3. **Verifique se os arquivos `docker-compose.yml` e `Presentation/ManaFood.WebAPI/Dockerfile` existem.**  
    Eles já estão prontos no projeto.
 
+4. Navegue até o arquivo de configuração:
+   ```
+   Presentation/ManaFood.WebAPI/appsettings.json
+   ```
 
-4. **Suba os containers:**  
+5. Localize a seção `ConnectionStrings`:
+   ```json
+   {
+     "ConnectionStrings": {
+       "DefaultConnection": "server=localhost;port=porta;database=nome_do_banco;user=seu_usuario;password=sua_senha;"
+     }
+   }
+   ```
+
+6. Substitua os valores:
+   - `seu_usuario`: Seu usuário do MySQL configurado no docker-compose.yml
+   - `sua_senha`: Sua senha do MySQL no docker-compose.yml
+   - `localhost`: Endereço do servidor (nome do serviço docker)
+   - `nome_do_banco`: Nome do banco configurado no docker-compose.yml  
+
+7. Configure a seção `ConnectionStrings` dessa forma:
+   ```json
+   {
+     "ConnectionStrings": {
+       "DefaultConnection": "server=db-mana-food;port=3307;database=db_manafood;user=root;password=senha123;"
+     }
+   }
+   ```
+
+8. **Suba os containers:**  
    No terminal, na raiz do projeto, execute:
    ```sh
    docker-compose up --build
    ```
 
-5. **Aguarde a inicialização.**  
+9. **Aguarde a inicialização.**  
    O Docker irá baixar as imagens necessárias, criar os containers e iniciar a aplicação.
 
 
-6. **Acesse a aplicação:**  
+10. **Acesse a aplicação:**  
    - API: [http://localhost:8080/index.html](http://localhost:8080/index.html)  
    - MySQL: `localhost:3306` -> Verifique o usuário e senha no `docker-compose.yml`
 
 
-7. **Para parar os containers:**  
+11. **Para parar os containers:**  
    Pressione `Ctrl+C` no terminal ou execute:
    ```sh
    docker-compose down
