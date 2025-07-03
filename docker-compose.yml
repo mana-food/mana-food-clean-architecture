@@ -8,7 +8,7 @@ services:
       context: .
       dockerfile: Presentation/ManaFood.WebAPI/Dockerfile
     ports:
-      - "80:8080"
+      - "8080:8080"
     depends_on:
       db-mana-food:
         condition: service_healthy 
@@ -18,7 +18,7 @@ services:
       DB_USER: root
       DB_PASSWORD: senha123
       DB_NAME: db_manafood
-      
+
   db-mana-food:
     container_name: manafood-mysql
     image: mysql:8.0
