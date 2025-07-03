@@ -1,0 +1,44 @@
+name: services-mana-food
+
+services:
+
+  app-mana-food:
+    container_name: manafood-app
+    build:
+      context: .
+      dockerfile: Presentation/ManaFood.WebAPI/Dockerfile
+    ports:
+      - "80:8080"
+    depends_on:
+      db-mana-food:
+        condition: service_healthy 
+    environment:
+      DB_HOST: db-mana-food
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: senha123
+      DB_NAME: db_manafood
+      
+  db-mana-food:
+    container_name: manafood-mysql
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: senha123
+      MYSQL_DATABASE: db_manafood
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+       # - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql # Habilitar se precisar de usar script sql de inicialização
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-psenha123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  mysql_data:
