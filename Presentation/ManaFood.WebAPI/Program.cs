@@ -1,15 +1,18 @@
 using ManaFood.Infrastructure.Configurations;
 using ManaFood.Application.Configurations;
+using ManaFood.Payment.Infrastructure.Configurations;
+using ManaFood.WebAPI.Mock;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.ConfigurePersistenceApp(builder.Configuration);
 builder.Services.ConfigureApplicationApp();
-
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
-
 builder.Services.AddOpenApi();
+builder.Services.AddPaymentInfrastructure(builder.Configuration);
+builder.Services.AddHttpClient<MockPaymentSender>();
 
 var app = builder.Build();
 
