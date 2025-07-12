@@ -14,6 +14,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddPaymentInfrastructure(builder.Configuration);
 builder.Services.AddHttpClient<MockPaymentSender>();
 
+builder.Services.AddTransient<UserValidationService>();
+
 var app = builder.Build();
 
 // Aplica migrations automaticamente
