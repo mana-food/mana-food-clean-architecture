@@ -7,7 +7,7 @@ public sealed class UpdateCategoryValidator : AbstractValidator<UpdateCategoryWi
 {
     public UpdateCategoryValidator()
     {
-        RuleFor(x => x.Name).RequiredString("Name");
-        RuleFor(x => x.Id).RequiredGuid("Id");
+        RuleFor(x => x.Id).RequiredGuid("ID");
+        RuleFor(x => x.Name).ValidName("Nome");
     }
 }

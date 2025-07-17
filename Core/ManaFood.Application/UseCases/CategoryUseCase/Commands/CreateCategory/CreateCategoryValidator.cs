@@ -7,6 +7,6 @@ public sealed class CreateCategoryValidator : AbstractValidator<CreateCategoryCo
 {
     public CreateCategoryValidator()
     {
-        RuleFor(x => x.Name).RequiredString("Name");
+        RuleFor(x => x.Name).ValidName("Nome");
     }
 }
