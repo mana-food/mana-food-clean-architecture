@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using ManaFood.Application.Interfaces.Services;
+using ManaFood.Domain.Entities;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ManaFood.Infrastructure.Auth;
@@ -14,7 +15,7 @@ public class JwtService(
     ITokenBlacklistService tokenBlacklistService)
     : IJwtService
 {
-    public string GenerateToken(Guid idUser, string emailUser)
+    public string GenerateToken(Guid idUser, string emailUser, UserType userType)
     {
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -23,6 +24,7 @@ public class JwtService(
         {
             new Claim(ClaimTypes.NameIdentifier, idUser.ToString()),
             new Claim(ClaimTypes.Email, emailUser),
+            new Claim(ClaimTypes.Role, userType.ToString()),
             new Claim("created_at", DateTime.UtcNow.ToString("o"))
         };
 

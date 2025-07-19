@@ -19,7 +19,7 @@ namespace ManaFood.Application.Services
             if (user == null)
                 return new AuthResult { Success = false, Message = "Email ou senha inválidos." };
 
-            var token = jwtService.GenerateToken(user.Id, user.Email);
+            var token = jwtService.GenerateToken(user.Id, user.Email, user.UserType);
             return new AuthResult { Success = true, Token = token };
         }
 
