@@ -13,33 +13,26 @@ namespace ManaFood.WebAPI.Controllers
     [CustomAuthorize]
     [ApiController]
     [Route("api/items")]
-    public class ItemController : ControllerBase
+    public class ItemController(IMediator mediator) : ControllerBase
     {
-        private readonly IMediator _mediator;
-
-        public ItemController(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
-
         [HttpGet]
         public async Task<ActionResult<ItemDto>> GetAll(CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new GetAllItemsQuery(), cancellationToken);
+            var result = await mediator.Send(new GetAllItemsQuery(), cancellationToken);
             return Ok(result);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ItemDto>> GetById(Guid id, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new GetItemByIdQuery(id), cancellationToken);
+            var result = await mediator.Send(new GetItemByIdQuery(id), cancellationToken);
             return Ok(result);
         }
 
         [HttpPost]
         public async Task<ActionResult<ItemDto>> Create(CreateItemCommand command, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(command, cancellationToken);
+            var result = await mediator.Send(command, cancellationToken);
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
@@ -49,7 +42,7 @@ namespace ManaFood.WebAPI.Controllers
             if (id != command.Id)
                 return BadRequest("Incompatibilidade de ID entre URL e corpo da solicitação");
 
-            var result = await _mediator.Send(command, cancellationToken);
+            var result = await mediator.Send(command, cancellationToken);
             return Ok(result);
         }
 
@@ -59,7 +52,7 @@ namespace ManaFood.WebAPI.Controllers
             if (id != command.Id)
                 return BadRequest("Incompatibilidade de ID entre URL e corpo da solicitação");
 
-            var result = await _mediator.Send(command, cancellationToken);
+            var result = await mediator.Send(command, cancellationToken);
             return Ok(result);
         }
 
