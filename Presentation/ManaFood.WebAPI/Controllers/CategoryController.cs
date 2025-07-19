@@ -6,9 +6,11 @@ using ManaFood.Application.UseCases.CategoryUseCase.Queries.GetCategoryById;
 using ManaFood.Application.UseCases.CategoryUseCase.Queries.GetAllCategories;
 using ManaFood.Application.UseCases.CategoryUseCase.Commands.UpdateCategory;
 using ManaFood.Application.UseCases.CategoryUseCase.Commands.DeleteCategory;
+using ManaFood.WebAPI.Filters;
 
 namespace ManaFood.WebAPI.Controllers
 {
+    [CustomAuthorize]
     [ApiController]
     [Route("api/categories")]
     public class CategoryController : ControllerBase

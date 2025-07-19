@@ -6,9 +6,11 @@ using ManaFood.Application.UseCases.ProductUseCase.Queries.GetProductById;
 using ManaFood.Application.UseCases.ProductUseCase.Queries.GetAllProducts;
 using ManaFood.Application.UseCases.ProductUseCase.Commands.UpdateProduct;
 using ManaFood.Application.UseCases.ProductUseCase.Commands.DeleteProduct;
+using ManaFood.WebAPI.Filters;
 
 namespace ManaFood.WebAPI.Controllers
 {
+    [CustomAuthorize]
     [ApiController]
     [Route("api/products")]
     public class ProductController : ControllerBase

@@ -6,9 +6,11 @@ using ManaFood.Application.UseCases.ItemUseCase.Queries.GetItemById;
 using ManaFood.Application.UseCases.ItemUseCase.Queries.GetAllItems;
 using ManaFood.Application.UseCases.ItemUseCase.Commands.UpdateItem;
 using ManaFood.Application.UseCases.ItemUseCase.Commands.DeleteItem;
+using ManaFood.WebAPI.Filters;
 
 namespace ManaFood.WebAPI.Controllers
 {
+    [CustomAuthorize]
     [ApiController]
     [Route("api/items")]
     public class ItemController : ControllerBase
