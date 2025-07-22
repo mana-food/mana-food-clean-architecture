@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: manafood-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: manafood-api
+  template:
+    metadata:
+      labels:
+        app: manafood-api
+    spec:
+      containers:
+        - name: manafood-api
+          image: yourdockerhub/manafood-api:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              value: manafood-mysql
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_USER
+              value: root
+            - name: DB_PASSWORD
+              value: senha123
+            - name: DB_NAME
+              value: db_manafood
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
