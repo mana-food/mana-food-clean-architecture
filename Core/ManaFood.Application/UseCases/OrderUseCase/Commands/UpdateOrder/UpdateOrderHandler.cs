@@ -2,6 +2,7 @@
 using ManaFood.Application.Dtos;
 using ManaFood.Domain.Entities;
 using ManaFood.Application.Interfaces;
+using ManaFood.Domain.Enums;
 using MediatR;
 
 namespace ManaFood.Application.UseCases.OrderUseCase.Commands.UpdateOrder;

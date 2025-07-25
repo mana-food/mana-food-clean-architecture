@@ -1,12 +1,16 @@
-namespace ManaFood.WebAPI.Webhooks.MercadoPago;
+using System.Diagnostics.Contracts;
+using Microsoft.AspNetCore.Mvc;
 
-public class MercadoPagoWebhookPayload
+namespace ManaFood.WebAPI.Webhooks.MercadoPago
 {
-    public string Type { get; set; } = string.Empty;
-    public MercadoPagoData Data { get; set; } = new();
-}
+    public class MercadoPagoWebhookPayload
+    {
+        public MercadoPagoData Data { get; set; }
+        public string Type { get; set; }
+    }
 
-public class MercadoPagoData
-{
-    public string Id { get; set; } = string.Empty;
+    public class MercadoPagoData
+    {
+        public string Id { get; set; }
+    }
 }

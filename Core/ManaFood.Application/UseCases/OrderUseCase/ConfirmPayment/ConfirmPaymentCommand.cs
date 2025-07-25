@@ -1,13 +1,16 @@
 using MediatR;
 
-namespace ManaFood.Application.UseCases.OrderUseCase.ConfirmPayment;
-
-public class ConfirmPaymentCommand : IRequest<Unit>
+namespace ManaFood.Application.UseCases.OrderUseCase.ConfirmPayment
 {
-    public string PaymentId { get; }
-
-    public ConfirmPaymentCommand(string paymentId)
+    public class ConfirmPaymentCommand : IRequest
     {
-        PaymentId = paymentId;
+        public string PaymentId { get; set; }
+
+        public ConfirmPaymentCommand(string paymentId)
+        {
+            PaymentId = paymentId;
+        }
+        public ConfirmPaymentCommand() { }
     }
+
 }

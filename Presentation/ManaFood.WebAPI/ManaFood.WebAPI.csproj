@@ -17,10 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\ManaFood.Application\ManaFood.Application.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\ManaFood.Infrastructure\ManaFood.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\Core\ManaFood.Payment.Domain\ManaFood.Payment.Domain.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\ManaFood.Payment.Infrastructure\ManaFood.Payment.Infrastructure.csproj" />
+   <ProjectReference Include="..\..\Core\ManaFood.Application\ManaFood.Application.csproj" />
+   <ProjectReference Include="..\..\Infrastructure\ManaFood.Infrastructure\ManaFood.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

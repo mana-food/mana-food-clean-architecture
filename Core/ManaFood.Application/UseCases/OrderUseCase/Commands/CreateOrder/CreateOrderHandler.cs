@@ -2,6 +2,7 @@
 using ManaFood.Application.Dtos;
 using ManaFood.Domain.Entities;
 using ManaFood.Application.Interfaces;
+using ManaFood.Domain.Enums;
 using MediatR;
 
 namespace ManaFood.Application.UseCases.OrderUseCase.Commands.CreateOrder;
@@ -45,7 +46,7 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderDto>
         var order = new Order
         {
             PaymentMethod = (PaymentMethod)request.PaymentMethod,
-            OrderStatus = OrderStatus.AGUADANDO_PAGAMENTO,
+            OrderStatus = OrderStatus.AGUARDANDO_PAGAMENTO,
             OrderConfirmationTime = null,
             Products = orderProducts
         };

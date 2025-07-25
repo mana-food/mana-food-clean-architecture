@@ -1,32 +1,26 @@
 using Microsoft.AspNetCore.Mvc;
-using ManaFood.Payment.Domain.Entities;
-using ManaFood.Payment.Domain.Interfaces;
+using ManaFood.Application.Interfaces;
+using System;
+using System.Threading.Tasks;
 
-namespace ManaFood.WebAPI.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class PaymentClientController : ControllerBase
+namespace ManaFood.WebAPI.Controllers
 {
-    private readonly IPaymentService _paymentService;
-
-    public PaymentClientController(IPaymentService paymentService)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class PaymentClientController : ControllerBase
     {
-        _paymentService = paymentService;
-    }
+        private readonly IPaymentService _paymentService;
 
-    [HttpPost("generate")]
-    public async Task<IActionResult> GeneratePaymentLink([FromBody] ManaFood.Payment.Domain.Entities.Payment payment)
-
-    {
-        try
+        public PaymentClientController(IPaymentService paymentService)
         {
-            var link = await _paymentService.GenerateQrCodeAsync(payment);
-            return Ok(new { paymentUrl = link });
+            _paymentService = paymentService;
         }
-        catch (Exception ex)
+
+        [HttpPost("{orderId}")]
+        public async Task<IActionResult> CreatePayment(Guid orderId)
         {
-            return BadRequest(new { message = "Erro ao gerar QR Code", error = ex.Message });
+            var paymentId = await _paymentService.CreatePaymentAsync(orderId, 100.00m);
+            return Ok(new { PaymentId = paymentId });
         }
     }
 }

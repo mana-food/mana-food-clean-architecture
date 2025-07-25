@@ -18,12 +18,14 @@ public class MercadoPagoWebhookReceiver : ControllerBase
     [HttpPost("payment-confirmation")]
     public async Task<IActionResult> ReceivePaymentConfirmation([FromBody] MercadoPagoWebhookPayload payload)
     {
-        if (payload == null || payload.Data == null || string.IsNullOrEmpty(payload.Data.Id))
+      if (payload?.Data == null || string.IsNullOrWhiteSpace(payload.Data.Id))
         {
             return BadRequest("Invalid payload");
         }
 
-        var command = new ConfirmPaymentCommand(payload.Data.Id);
+        var command = new ConfirmPaymentCommand(payload.Data.Id.ToString());
+        Console.WriteLine($"[Webhook] Tipo do ID recebido: {payload.Data.Id.GetType()} — valor: {payload.Data.Id}");
+
         await _mediator.Send(command);
 
         return Ok();
