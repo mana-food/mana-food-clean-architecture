@@ -5,6 +5,7 @@ using System.Text;
 using ManaFood.Application.Interfaces.Services;
 using ManaFood.Application.Services;
 using ManaFood.Infrastructure.Auth;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var jwtSettings = builder.Configuration.GetSection("Jwt");
@@ -27,7 +28,36 @@ builder.Services.ConfigurePersistenceApp(builder.Configuration);
 builder.Services.ConfigureApplicationApp();
 
 builder.Services.AddControllers();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "ManaFood API", Version = "v1" });
+
+    // Adiciona a configuração de segurança JWT
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Insira o token JWT no campo abaixo usando o prefixo 'Bearer'. Exemplo: Bearer {seu token}"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference 
+                { 
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer" 
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 builder.Services.AddOpenApi();
 
@@ -65,17 +95,14 @@ app.UseRouting();
 app.UseMiddleware<ManaFood.WebAPI.Middlewares.JwtAuthenticationMiddleware>();
 app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
+// Configure the HTTP request pipeline.
+app.MapOpenApi();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "ManaFood API V2");
     c.RoutePrefix = string.Empty;
 });
-
-// Configure the HTTP request pipeline.
-app.MapOpenApi();
-app.UseSwagger();
-app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
