@@ -8,5 +8,6 @@ public sealed record UpdateUserCommand(
     string Email,
     string Name,
     string Cpf,
+    string Password,
     DateOnly Birthday,
     int UserType) : IRequest<UserDto>;
