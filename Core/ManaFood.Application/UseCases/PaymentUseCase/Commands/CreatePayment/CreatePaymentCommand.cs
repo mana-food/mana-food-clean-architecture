@@ -5,14 +5,12 @@ namespace ManaFood.Application.UseCases.PaymentUseCase.Commands.CreatePayment
     public class CreatePaymentCommand : IRequest<string>
     {
         public Guid OrderId { get; set; }
-        public decimal Amount { get; set; }
+        public decimal TotalAmount { get; set; }
 
-        public CreatePaymentCommand(Guid orderId, decimal amount)
-        {
-            OrderId = orderId;
-            Amount = amount;
-        }
-
-        public CreatePaymentCommand() { }
+        public required string PayerEmail { get; set; }
+        public required string PayerFirstName { get; set; }
+        public required string PayerLastName { get; set; }
+        public required string PayerId { get; set; }
     }
+
 }

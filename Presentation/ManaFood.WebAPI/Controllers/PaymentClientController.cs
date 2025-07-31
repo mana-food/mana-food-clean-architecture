@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using ManaFood.Application.Interfaces;
+using ManaFood.WebAPI.Controllers;
 using System;
 using System.Threading.Tasks;
+using ManaFood.Application.Dtos;
 
 namespace ManaFood.WebAPI.Controllers
 {
@@ -16,10 +18,18 @@ namespace ManaFood.WebAPI.Controllers
             _paymentService = paymentService;
         }
 
-        [HttpPost("{orderId}")]
-        public async Task<IActionResult> CreatePayment(Guid orderId)
+        [HttpPost("checkout")]
+        public async Task<IActionResult> CreatePayment([FromBody] CreatePaymentRequest request)
         {
-            var paymentId = await _paymentService.CreatePaymentAsync(orderId, 100.00m);
+            var paymentId = await _paymentService.CreatePaymentAsync(
+                request.OrderId,
+                request.Amount,
+                request.PayerEmail,
+                request.PayerFirstName,
+                request.PayerLastName,
+                request.PayerId
+            );
+
             return Ok(new { PaymentId = paymentId });
         }
     }

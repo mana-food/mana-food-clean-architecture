@@ -7,27 +7,29 @@ namespace ManaFood.Application.UseCases.PaymentUseCase.Commands.CreatePayment
     public class CreatePaymentHandler : IRequestHandler<CreatePaymentCommand, string>
     {
         private readonly IPaymentService _paymentService;
-        private readonly IValidator<CreatePaymentCommand> _validator;
 
-        public CreatePaymentHandler(IPaymentService paymentService, IValidator<CreatePaymentCommand> validator)
+        public CreatePaymentHandler(IPaymentService paymentService)
         {
             _paymentService = paymentService;
-            _validator = validator;
         }
 
         public async Task<string> Handle(CreatePaymentCommand request, CancellationToken cancellationToken)
         {
-            var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+            Console.WriteLine($"📦 Criando pagamento para: {request.OrderId}");
+            Console.WriteLine($"👤 Payer: {request.PayerFirstName} {request.PayerLastName} | Email: {request.PayerEmail}");
 
-            if (!validationResult.IsValid)
-            {
-                var errors = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
-                throw new ValidationException($"Erro de validação: {errors}");
-            }
+            var response = await _paymentService.CreatePaymentAsync(
+                request.OrderId,
+                request.TotalAmount,
+                request.PayerEmail,
+                request.PayerFirstName,
+                request.PayerLastName,
+                request.PayerId
+            );
 
-            var paymentId = await _paymentService.CreatePaymentAsync(request.OrderId, request.Amount);
+            Console.WriteLine($"✅ Pagamento criado com sucesso! Resposta: {response}");
 
-            return paymentId;
+            return response;
         }
     }
 }

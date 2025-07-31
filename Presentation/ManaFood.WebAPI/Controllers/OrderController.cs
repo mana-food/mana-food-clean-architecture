@@ -6,6 +6,7 @@ using ManaFood.Application.UseCases.OrderUseCase.Queries.GetOrderById;
 using ManaFood.Application.UseCases.OrderUseCase.Queries.GetAllOrders;
 using ManaFood.Application.UseCases.OrderUseCase.Commands.UpdateOrder;
 using ManaFood.Application.UseCases.OrderUseCase.Commands.DeleteOrder;
+using ManaFood.Application.UseCases.OrderUseCase.Queries.GetApprovedOrders;
 
 namespace ManaFood.WebAPI.Controllers
 {
@@ -24,6 +25,13 @@ namespace ManaFood.WebAPI.Controllers
         public async Task<ActionResult<OrderDto>> GetAll(CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new GetAllOrdersQuery(), cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpGet("ready")]
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetReadyForKitchen(CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new GetApprovedOrdersQuery(), cancellationToken);
             return Ok(result);
         }
 

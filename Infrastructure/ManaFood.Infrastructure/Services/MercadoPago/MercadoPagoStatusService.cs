@@ -30,7 +30,6 @@ namespace ManaFood.Infrastructure.Services.MercadoPago
             var content = await response.Content.ReadAsStringAsync();
             using var doc = JsonDocument.Parse(content);
 
-            // 'transactions.payments' - dentro da ordem
             var payments = doc.RootElement.GetProperty("transactions").GetProperty("payments");
 
             if (payments.GetArrayLength() == 0)

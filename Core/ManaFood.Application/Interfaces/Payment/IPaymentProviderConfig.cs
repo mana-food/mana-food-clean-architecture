@@ -4,5 +4,9 @@ namespace ManaFood.Application.Interfaces
     {
         string AccessToken { get; }
         string NotificationUrl { get; }
+        long UserId { get; }
+        string StoreId { get; }
+        string ExternalStoreId { get; }
+        string ExternalPosId { get; }
     }
 }
