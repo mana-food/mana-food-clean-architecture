@@ -194,8 +194,38 @@ Segue um passo a passo simples para rodar os containers do projeto:
     ```sh
     dotnet ef migrations add NOME_DA_SUA_MIGRATION --project Infrastructure/ManaFood.Infrastructure --startup-project Presentation/ManaFood.WebAPI
     ```
+---
+### 5. Explicação da Autenticação e Autorização
 
-### 5. Documentação Complementar
+#### Visão Geral
+
+A aplicação utiliza autenticação baseada em JWT (JSON Web Token) para garantir que apenas usuários autenticados possam acessar endpoints protegidos. A autorização é feita por meio de roles, permitindo restringir o acesso conforme o tipo de usuário.
+
+#### Autenticação 🔐
+
+- O usuário realiza login e recebe um token JWT.
+- O token deve ser enviado no header `Authorization` em todas as requisições protegidas:
+  ```
+  Authorization: Bearer {seu_token_jwt}
+  ```
+- O middleware `JwtAuthenticationMiddleware` intercepta as requisições, valida o token e define o usuário autenticado no contexto da aplicação.
+
+#### Autorização 👤
+
+- Para proteger endpoints, utilize o atributo `[CustomAuthorize]` nos controllers ou actions.
+- É possível restringir o acesso por tipo de usuário (roles) usando o enum `UserType`:
+  ```csharp
+  [CustomAuthorize(UserType.Admin, UserType.Manager)]
+  public IActionResult EndpointProtegido() { ... }
+  ```
+- O atributo verifica se o token é válido e se o usuário possui uma das roles informadas. Caso contrário, retorna `Unauthorized` ou `Forbid`.
+
+#### Fluxo de Validação
+
+1. **Middleware**: Valida o token JWT em todas as requisições.
+2. **Atributo CustomAuthorize**: Opcionalmente, valida se o usuário possui a role necessária antes de executar a ação.
+---
+### 6. Documentação Complementar
 
 #### Documentação Notion:
 ```sh

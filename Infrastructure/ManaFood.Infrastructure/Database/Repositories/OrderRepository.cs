@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using ManaFood.Domain.Entities;
 using ManaFood.Application.Interfaces;
 using ManaFood.Infrastructure.Database.Context;
+using Microsoft.EntityFrameworkCore;
 using ManaFood.Application.Shared;
 
 namespace ManaFood.Infrastructure.Database.Repositories
@@ -21,6 +22,22 @@ namespace ManaFood.Infrastructure.Database.Repositories
                 .Where(o => o.OrderStatus == OrderStatus.APROVADO)
                 .OrderBy(o => o.UpdatedAt)
                 .ToListAsync(cancellationToken);
+        }
+
+        public async Task<List<Order>> GetAllActive(Expression<Func<Order, bool>> predicate, CancellationToken cancellationToken)
+        {
+            return await _context.Set<Order>()
+                .Where(x => !x.Deleted)
+                .Where(predicate)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<Order?> GetByIdWithProductsAsync(Guid id)
+        {
+            return await _context.Orders
+                .Include(o => o.Products)
+                .ThenInclude(op => op.Product)
+                .FirstOrDefaultAsync(o => o.Id == id);
         }
     }
 }

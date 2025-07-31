@@ -296,6 +296,12 @@ namespace ManaFood.Infrastructure.Migrations
                         .HasColumnType("varchar(100)")
                         .HasColumnName("name");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("password");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime(6)")
                         .HasColumnName("updated_at");
