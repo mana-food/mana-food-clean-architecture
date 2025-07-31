@@ -1,4 +1,5 @@
 using ManaFood.Application.Interfaces.Services;
+using ManaFood.Domain.Entities;
 using ManaFood.WebAPI.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
@@ -22,7 +23,7 @@ namespace ManaFood.WebAPI.Controllers
         }
 
         [HttpPost("logout")]
-        [CustomAuthorize]
+        [CustomAuthorize(UserType.ADMIN, UserType.MANAGER, UserType.OPERATOR, UserType.KITCHEN, UserType.CUSTOMER)]
         public IActionResult Logout()
         {
             var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
@@ -34,7 +35,7 @@ namespace ManaFood.WebAPI.Controllers
         }
 
         [HttpGet("me")]
-        [CustomAuthorize]
+        [CustomAuthorize(UserType.ADMIN, UserType.MANAGER, UserType.OPERATOR, UserType.KITCHEN, UserType.CUSTOMER)]
         public IActionResult GetCurrentUser()
         {
             var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");

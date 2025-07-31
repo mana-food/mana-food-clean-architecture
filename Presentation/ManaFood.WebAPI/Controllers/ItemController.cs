@@ -6,15 +6,17 @@ using ManaFood.Application.UseCases.ItemUseCase.Queries.GetItemById;
 using ManaFood.Application.UseCases.ItemUseCase.Queries.GetAllItems;
 using ManaFood.Application.UseCases.ItemUseCase.Commands.UpdateItem;
 using ManaFood.Application.UseCases.ItemUseCase.Commands.DeleteItem;
+using ManaFood.Domain.Entities;
 using ManaFood.WebAPI.Filters;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ManaFood.WebAPI.Controllers
 {
-    [CustomAuthorize]
     [ApiController]
     [Route("api/items")]
     public class ItemController(IMediator mediator) : ControllerBase
     {
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<ItemDto>> GetAll(CancellationToken cancellationToken)
         {
@@ -22,6 +24,7 @@ namespace ManaFood.WebAPI.Controllers
             return Ok(result);
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<ItemDto>> GetById(Guid id, CancellationToken cancellationToken)
         {
@@ -29,6 +32,7 @@ namespace ManaFood.WebAPI.Controllers
             return Ok(result);
         }
 
+        [CustomAuthorize(UserType.ADMIN, UserType.MANAGER)]
         [HttpPost]
         public async Task<ActionResult<ItemDto>> Create(CreateItemCommand command, CancellationToken cancellationToken)
         {
@@ -36,6 +40,7 @@ namespace ManaFood.WebAPI.Controllers
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
+        [CustomAuthorize(UserType.ADMIN, UserType.MANAGER)]
         [HttpPut("{id}")]
         public async Task<ActionResult<ItemDto>> Update(Guid id, UpdateItemCommand command, CancellationToken cancellationToken)
         {
@@ -46,6 +51,7 @@ namespace ManaFood.WebAPI.Controllers
             return Ok(result);
         }
 
+        [CustomAuthorize(UserType.ADMIN, UserType.MANAGER)]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(Guid id, DeleteItemCommand command, CancellationToken cancellationToken)
         {
