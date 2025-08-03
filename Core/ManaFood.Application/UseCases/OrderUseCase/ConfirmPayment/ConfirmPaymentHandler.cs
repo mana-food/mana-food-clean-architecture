@@ -41,7 +41,7 @@ public class ConfirmPaymentHandler : IRequestHandler<ConfirmPaymentCommand, Unit
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"💥 Erro no ConfirmPaymentHandler: {ex.Message}");
+            Console.WriteLine($"Erro no ConfirmPaymentHandler: {ex.Message}");
         }
 
         return Unit.Value;

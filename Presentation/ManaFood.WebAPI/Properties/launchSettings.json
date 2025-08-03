@@ -10,7 +10,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "MERCADOPAGO_ACCESS_TOKEN": "APP_USR-5251872727110258-072718-de98b9eff797cd7225c74f9dd7fdd352-2520145005",
-        "MERCADOPAGO_NOTIFICATION_URL": "https://7cdbccf5ea42.ngrok-free.app/api/webhooks/mercadopago/payment-confirmation?source_news=webhooks",
+        "MERCADOPAGO_NOTIFICATION_URL": "https://SEU-ID-NGROK.ngrok-free.app/api/webhooks/mercadopago/payment-confirmation?source_news=webhooks",
         "MERCADOPAGO_USER_ID": "2520145005",
         "MERCADOPAGO_STORE_ID":"73217248",
         "MERCADOPAGO_EXTERNAL_STORE_ID": "MANAFOOD_STORE_002",
@@ -27,7 +27,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "MERCADOPAGO_ACCESS_TOKEN": "APP_USR-5251872727110258-072718-de98b9eff797cd7225c74f9dd7fdd352-2520145005",
-        "MERCADOPAGO_NOTIFICATION_URL": "https://7cdbccf5ea42.ngrok-free.app/api/webhooks/mercadopago/payment-confirmation",
+        "MERCADOPAGO_NOTIFICATION_URL": "https://SEU-ID-NGROK.ngrok-free.app/api/webhooks/mercadopago/payment-confirmation",
         "MERCADOPAGO_USER_ID": "2520145005",
         "MERCADOPAGO_STORE_ID":"73217248",
         "MERCADOPAGO_EXTERNAL_STORE_ID": "MANAFOOD_STORE_002",
