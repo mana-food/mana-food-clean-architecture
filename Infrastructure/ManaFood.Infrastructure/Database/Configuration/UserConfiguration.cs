@@ -24,6 +24,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasColumnName("cpf")
             .IsRequired()
             .HasMaxLength(11);
+        builder.Property(e => e.Password)
+            .HasColumnName("password")
+            .IsRequired()
+            .HasMaxLength(50);
         builder.Property(e => e.Birthday)
             .HasColumnName("birthday")
             .IsRequired()
