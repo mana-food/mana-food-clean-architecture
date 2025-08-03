@@ -1,5 +1,11 @@
 # Maná Food
 
+# Diagrama - Resquisitos do Negócio
+![Diagrama de requisitos](Assets/DiagramaRequisitos_ManaFood.png)
+
+# Diagrama - Infraestrutura para fase II
+![Diagrama de infraestrutura aplicada na fase II](Assets/DiagramaInfraestrutura_ManaFood.png)
+
 ## Estrutura de Pastas
 
 ```
@@ -19,13 +25,20 @@ mana-food-clean-architecture/
 │           ├── Configuration/
 │           ├── Context/
 │           └── Repositories/
+├── k8s/
 ├── Presentation/
 │   └── ManaFood.WebAPI/           # Camada de apresentação (controllers, configuração da API)
 │       ├── Controllers/
+|       ├── Filters/
+│       ├── Middlewares/
 │       ├── Properties/
 │       ├── appsettings.json
 |       ├── appsettings.Development.json
 │       └── Dockerfile
+│       └── Webhooks/
+│           └── MercadoPago/
+└── Test/
+│   └── ManaFood.UnitTest/
 ├── README.md
 ├── .gitignore
 ├── docker-compose.yml
@@ -61,6 +74,25 @@ O `docker-compose.yml` orquestra múltiplos containers. Aqui, ele:
 
 ---
 
+## Meio de Pagamento: QRCode Mercado Pago, integrado para acione de Webhook mediante aprovação
+
+   O cadastro de webhook do Mercado Pago carece de cadastro de URL pública, para resposta. Portanto, selecionamos o serviço "Ngrok".
+   O Ngrok é uma ferramenta que cria um túnel seguro da internet para sua máquina local. Em outras palavras:
+
+   Ele gera um link público (tipo https://7cdbccf5ea42.ngrok-free.app) que redireciona para o seu servidor local (http://localhost:5111), mesmo que você esteja atrás de um roteador, firewall ou em uma rede privada.
+
+   # Utilização do Ngrok para Webhook
+   A variável MERCADOPAGO_NOTIFICATION_URL deve conter um endpoint público, para que o Mercado Pago envie notificações. Como a aplicação roda localmente, usamos o Ngrok para gerar esse link acessível pela internet. Contudo, esse link muda sempre que o Ngrok é reiniciado. Por esse motivo, disponibilizamos os passos abaixo, possibilitando a sequência de testes.
+"SEU-ID-NGROK" -> informar*********
+   # Como usar o Ngrok para o webhook
+
+   1 - Instale o Ngrok.
+   2 - No terminal, execute o comando: 
+   ```sh
+   ngrok http https://localhost:5111
+   ```
+   3 - Copie o ID gerado (ex: https://SEU_NGROK_ID.ngrok-free.app), atualizando a string da variável de ambiente "MERCADOPAGO_NOTIFICATION_URL".
+
 ## Como executar o projeto
 
 ### 1. Clonando o repositório
@@ -76,25 +108,19 @@ Certifique-se de ter o [.NET 9](https://dotnet.microsoft.com/en-us/download/dotn
 
 1. Navegue até o arquivo de configuração:
    ```
-   Presentation/ManaFood.WebAPI/appsettings.json
+   Presentation/ManaFood.WebAPI/Properties/launchSettings.json
    ```
 
-2. Localize a seção `ConnectionStrings`:
-   ```json
-   {
-     "ConnectionStrings": {
-       "DefaultConnection": "server=localhost;database=manafood;user=seu_usuario;password=sua_senha;charset=utf8mb4;"
-     }
-   }
-   ```
+2. Localize a chave `CONNECTION_STRING`.
 
-3. Substitua os valores:
-   - `seu_usuario`: Seu usuário do MySQL
-   - `sua_senha`: Sua senha do MySQL
-   - `localhost`: Endereço do servidor (mantenha se for local)
-   - `manafood`: Nome do banco (será criado automaticamente)
+2. 1. Substitua os valores:
+   - `server`: Endereço do servidor (mantenha se for local)
+   - `port`: 3306
+   - `database`: Nome do banco (será criado automaticamente)
+   - `user`: Seu usuário do MySQL
+   - `password`: Sua senha do MySQL
 
-4. Exemplo de configuração:
+2. 2. Exemplo de configuração:
    ```json
    {
      "ConnectionStrings": {
@@ -103,7 +129,19 @@ Certifique-se de ter o [.NET 9](https://dotnet.microsoft.com/en-us/download/dotn
    }
    ```
 
-5. Execute a aplicação:
+   # Utilização do Ngrok para Webhook
+   A variável MERCADOPAGO_NOTIFICATION_URL deve conter um endpoint público, para que o Mercado Pago envie notificações. Como a aplicação roda localmente, usamos o Ngrok para gerar esse link acessível pela internet. Contudo, esse link muda sempre que o Ngrok é reiniciado. Por esse motivo, disponibilizamos os passos abaixo, possibilitando a sequência de testes.
+
+   # Como usar o Ngrok para o webhook
+
+   1 - Instale o Ngrok.
+   2 - No terminal, execute o comando: 
+   ```sh
+   ngrok http https://localhost:5111
+   ```
+   3 - Copie o ID gerado (ex: https://SEU_NGROK_ID.ngrok-free.app), atualizando a string da variável de ambiente "MERCADOPAGO_NOTIFICATION_URL".
+
+3. Execute a aplicação:
 
     ```sh
     dotnet run --project Presentation/ManaFood.WebAPI/ManaFood.WebAPI.csproj
@@ -153,7 +191,7 @@ Segue um passo a passo simples para rodar os containers do projeto:
    ```json
    {
      "ConnectionStrings": {
-       "DefaultConnection": "server=db-mana-food;port=3307;database=db_manafood;user=root;password=senha123;"
+       "DefaultConnection": "server=db-mana-food;port=3307;database=db_manafood;user=root;password=senha123"
      }
    }
    ```
@@ -225,7 +263,31 @@ A aplicação utiliza autenticação baseada em JWT (JSON Web Token) para garant
 1. **Middleware**: Valida o token JWT em todas as requisições.
 2. **Atributo CustomAuthorize**: Opcionalmente, valida se o usuário possui a role necessária antes de executar a ação.
 ---
-### 6. Documentação Complementar
+
+### 6. Ordem de execução das APIs
+
+**Pré requisitos**:
+   - Conta do Mercado Pago
+   - Conta no NGrok
+
+1. Autenticação
+   - Crie um usuário na API de usuário (User - POST)
+   - Execute a API de autenticação para gerar um token JWT no endpoint de login (Auth - POST)
+   - Coloque o token JWT no Authorize no swagger
+2. Criar um Produto
+   - Execute a API de categoria para criar uma categoria (Category - POST)
+   - Execute a API de item para criar um ou mais itens (Item - POST)
+   - Execute a API de produto para criar o produto (Product - POST)
+3. Criar um Pedido
+   - Execute a API de pedido para criar um pedido (Order - POST)
+4. Realizar o Pagamento
+   - Execute a API de pagamentos para gerar o QR Code no Mercado Pago (PaymentClient - POST)
+   - Execute a API de pagamentos para visualizar o QR Code gerado (PaymentClient - GET)
+   - Escanei o QRCode no aplicativo do Mercado Pago para gerar o pagamento na conta de teste
+   - Execute a API de confirmação de pagamento para atualizar o pedido (MercadoPagoWebhookReceiver - POST)
+
+---
+### 7. Documentação Complementar
 
 #### Documentação Notion:
 ```sh

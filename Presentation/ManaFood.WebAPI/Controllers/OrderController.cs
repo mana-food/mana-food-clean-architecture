@@ -2,10 +2,12 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ManaFood.Application.Dtos;
 using ManaFood.Application.UseCases.OrderUseCase.Commands.CreateOrder;
-using ManaFood.Application.UseCases.OrderUseCase.Queries.GetOrderById;
-using ManaFood.Application.UseCases.OrderUseCase.Queries.GetAllOrders;
-using ManaFood.Application.UseCases.OrderUseCase.Commands.UpdateOrder;
 using ManaFood.Application.UseCases.OrderUseCase.Commands.DeleteOrder;
+using ManaFood.Application.UseCases.OrderUseCase.Commands.UpdateOrder;
+using ManaFood.Application.UseCases.OrderUseCase.Queries.GetAllOrders;
+using ManaFood.Application.UseCases.OrderUseCase.Queries.GetOrderById;
+using ManaFood.Application.UseCases.OrderUseCase.Queries.GetApprovedOrders;
+
 using ManaFood.Domain.Entities;
 using ManaFood.WebAPI.Filters;
 using Microsoft.AspNetCore.Authorization;
@@ -21,6 +23,14 @@ namespace ManaFood.WebAPI.Controllers
         public async Task<ActionResult<OrderDto>> GetAll(CancellationToken cancellationToken)
         {
             var result = await mediator.Send(new GetAllOrdersQuery(), cancellationToken);
+            return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("ready")]
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetReadyForKitchen(CancellationToken cancellationToken)
+        {
+            var result = await mediator.Send(new GetApprovedOrdersQuery(), cancellationToken);
             return Ok(result);
         }
 
@@ -50,7 +60,7 @@ namespace ManaFood.WebAPI.Controllers
             var result = await mediator.Send(command, cancellationToken);
             return Ok(result);
         }
-        
+
         [CustomAuthorize(UserType.ADMIN, UserType.MANAGER)]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(Guid id, DeleteOrderCommand command, CancellationToken cancellationToken)
@@ -61,6 +71,5 @@ namespace ManaFood.WebAPI.Controllers
             var result = await mediator.Send(command, cancellationToken);
             return Ok(result);
         }
-
     }
 }
