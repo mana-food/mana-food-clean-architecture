@@ -5,7 +5,7 @@
 namespace ManaFood.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateTableUserColunaPassword : Migration
+    public partial class UpdateTableUserColumnPassword : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
