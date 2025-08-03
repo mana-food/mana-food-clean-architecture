@@ -9,8 +9,7 @@ namespace ManaFood.Infrastructure.Configurations;
 
 public static class ServiceExtensions
 {
-    public static void ConfigurePersistenceApp(this IServiceCollection services,
-                                                IConfiguration configuration)
+    public static void ConfigurePersistenceApp(this IServiceCollection services)
     {
         var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
         services.AddDbContext<ApplicationContext>(opt =>

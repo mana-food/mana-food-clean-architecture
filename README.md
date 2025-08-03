@@ -243,7 +243,31 @@ A aplicação utiliza autenticação baseada em JWT (JSON Web Token) para garant
 1. **Middleware**: Valida o token JWT em todas as requisições.
 2. **Atributo CustomAuthorize**: Opcionalmente, valida se o usuário possui a role necessária antes de executar a ação.
 ---
-### 6. Documentação Complementar
+
+### 6. Ordem de execução das APIs
+
+**Pré requisitos**:
+   - Conta do Mercado Pago
+   - Conta no NGrok
+
+1. Autenticação
+   - Crie um usuário na API de usuário (User - POST)
+   - Execute a API de autenticação para gerar um token JWT no endpoint de login (Auth - POST)
+   - Coloque o token JWT no Authorize no swagger
+2. Criar um Produto
+   - Execute a API de categoria para criar uma categoria (Category - POST)
+   - Execute a API de item para criar um ou mais itens (Item - POST)
+   - Execute a API de produto para criar o produto (Product - POST)
+3. Criar um Pedido
+   - Execute a API de pedido para criar um pedido (Order - POST)
+4. Realizar o Pagamento
+   - Execute a API de pagamentos para gerar o QR Code no Mercado Pago (PaymentClient - POST)
+   - Execute a API de pagamentos para visualizar o QR Code gerado (PaymentClient - GET)
+   - Escanei o QRCode no aplicativo do Mercado Pago para gerar o pagamento na conta de teste
+   - Execute a API de confirmação de pagamento para atualizar o pedido (MercadoPagoWebhookReceiver - POST)
+
+---
+### 7. Documentação Complementar
 
 #### Documentação Notion:
 ```sh

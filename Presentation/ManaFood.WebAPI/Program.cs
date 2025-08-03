@@ -30,7 +30,7 @@ builder.Services.AddSingleton<IJwtService>(provider =>
 });
 
 // Configurações de infraestrutura e aplicação
-builder.Services.ConfigurePersistenceApp(builder.Configuration);
+builder.Services.ConfigurePersistenceApp();
 builder.Services.ConfigureApplicationApp();
 builder.Services.AddPersistenceServices();
 
