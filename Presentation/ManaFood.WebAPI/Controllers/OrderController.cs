@@ -40,7 +40,7 @@ namespace ManaFood.WebAPI.Controllers
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
-        [CustomAuthorize(UserType.ADMIN, UserType.MANAGER, UserType.OPERATOR, UserType.KITCHEN)]
+        [CustomAuthorize(UserType.ADMIN, UserType.KITCHEN)]
         [HttpPut("{id}")]
         public async Task<ActionResult<OrderDto>> Update(Guid id, UpdateOrderCommand command, CancellationToken cancellationToken)
         {
