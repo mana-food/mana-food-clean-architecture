@@ -1,16 +1,21 @@
 using ManaFood.Infrastructure.Configurations;
 using ManaFood.Application.Configurations;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using ManaFood.Infrastructure.Services;
+using ManaFood.Infrastructure.Services.MercadoPago;
+
+using ManaFood.Application.Interfaces;
 using ManaFood.Application.Interfaces.Services;
 using ManaFood.Application.Services;
+
 using ManaFood.Infrastructure.Auth;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 
-// Registrar JwtService para uso em controllers/filtros
+// JWT & Auth services
 builder.Services.AddSingleton<ITokenBlacklistService, TokenBlacklistService>();
 builder.Services.AddSingleton<IJwtService>(provider =>
 {
@@ -24,15 +29,18 @@ builder.Services.AddSingleton<IJwtService>(provider =>
     return new JwtService(secretKey, expiration, issuer, audience, blacklistService);
 });
 
-builder.Services.ConfigurePersistenceApp(builder.Configuration);
+// Configurações de infraestrutura e aplicação
+builder.Services.ConfigurePersistenceApp();
 builder.Services.ConfigureApplicationApp();
+builder.Services.AddPersistenceServices();
 
 builder.Services.AddControllers();
+
+// Swagger com segurança
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "ManaFood API", Version = "v1" });
 
-    // Adiciona a configuração de segurança JWT
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -48,10 +56,10 @@ builder.Services.AddSwaggerGen(c =>
         {
             new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference 
-                { 
+                Reference = new OpenApiReference
+                {
                     Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer" 
+                    Id = "Bearer"
                 }
             },
             Array.Empty<string>()
@@ -61,42 +69,40 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddOpenApi();
 
+// Injeção de dependências
 builder.Services.AddTransient<UserValidationService>();
-
+builder.Services.AddHttpClient<IPaymentService, PaymentService>();
+builder.Services.AddHttpClient<IPaymentStatusService, MercadoPagoStatusService>();
+builder.Services.AddScoped<IPaymentProviderConfig, PaymentProviderConfig>();
 builder.Services.AddScoped<IAuthAppService, AuthAppService>();
 
+// Autenticação JWT
 builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = "JwtBearer";
+    options.DefaultChallengeScheme = "JwtBearer";
+})
+.AddJwtBearer("JwtBearer", options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.DefaultAuthenticateScheme = "JwtBearer";
-        options.DefaultChallengeScheme = "JwtBearer";
-    })
-    .AddJwtBearer("JwtBearer", options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings["Issuer"],
-            ValidAudience = jwtSettings["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]))
-        };
-    });
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]))
+    };
+});
 
 var app = builder.Build();
 
 // Aplica migrations automaticamente
 await app.MigrateDbContextAsync();
 
-app.UseMiddleware<ManaFood.WebAPI.Middlewares.JwtAuthenticationMiddleware>();
-app.UseRouting();
-app.UseMiddleware<ManaFood.WebAPI.Middlewares.JwtAuthenticationMiddleware>();
-app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-
-// Configure the HTTP request pipeline.
-app.MapOpenApi();
+// Middlewares
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -106,10 +112,10 @@ app.UseSwaggerUI(c =>
 
 app.UseHttpsRedirection();
 
-// Ordem correta dos middlewares
 app.UseAuthentication();
-// app.UseAuthorization();
+app.UseAuthorization();
+
+app.UseMiddleware<ManaFood.WebAPI.Middlewares.JwtAuthenticationMiddleware>();
 
 app.MapControllers();
-
 app.Run();

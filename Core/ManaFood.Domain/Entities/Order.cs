@@ -1,31 +1,27 @@
-﻿namespace ManaFood.Domain.Entities;
+﻿using ManaFood.Domain.Enums;
+
+namespace ManaFood.Domain.Entities;
 
 public class Order : BaseEntity
 {
-    public DateTime? OrderConfirmationTime { get; init; }
+    public DateTime? OrderConfirmationTime { get; set; }
     public OrderStatus OrderStatus { get; set; }
     public double TotalAmount { get; set; }
     public PaymentMethod PaymentMethod { get; set; }
     public List<OrderProduct> Products { get; set; } = new();
-
+    public DateTime UpdatedAt { get; set; }
     public void CalculateTotal()
     {
         TotalAmount = Products.Sum(p => p.Product.UnitPrice * p.Quantity);
     }
-}
-public enum OrderStatus
-{
-    AGUADANDO_PAGAMENTO = 0,
-    CANCELADO = 1,
-    RECEIVED = 2,
-    PREPARING = 3,
-    READY = 4,
-    FINALIZED = 5
-}
+    public void SetStatus(OrderStatus status)
+    {
+        OrderStatus = status;
+        UpdatedAt = DateTime.UtcNow;
 
-public enum PaymentMethod
-{
-    PIX = 0,
-    CREDIT_CARD = 1,
-    DEBIT_CARD = 2
+        if (status == OrderStatus.RECEIVED)
+        {
+            OrderConfirmationTime = DateTime.UtcNow;
+        }
+    }
 }
