@@ -19,7 +19,7 @@ namespace ManaFood.Infrastructure.Database.Repositories
         public async Task<IEnumerable<Order>> GetApprovedOrdersAsync(CancellationToken cancellationToken)
         {
             return await _context.Orders
-                .Where(o => o.OrderStatus == OrderStatus.APROVADO)
+                .Where(o => o.OrderStatus == OrderStatus.RECEIVED)
                 .OrderBy(o => o.UpdatedAt)
                 .ToListAsync(cancellationToken);
         }
@@ -39,5 +39,12 @@ namespace ManaFood.Infrastructure.Database.Repositories
                 .ThenInclude(op => op.Product)
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
+
+        public async Task UpdateAsync(Order order)
+        {
+            _context.Orders.Update(order);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

@@ -1,16 +1,12 @@
 using MediatR;
+using System;
+using ManaFood.Application.Dtos;
 
 namespace ManaFood.Application.UseCases.PaymentUseCase.Commands.CreatePayment
 {
-    public class CreatePaymentCommand : IRequest<string>
+    public class CreatePaymentCommand : IRequest<CreatePaymentResponse>
     {
         public Guid OrderId { get; set; }
-        public decimal TotalAmount { get; set; }
-
-        public required string PayerEmail { get; set; }
-        public required string PayerFirstName { get; set; }
-        public required string PayerLastName { get; set; }
-        public required string PayerId { get; set; }
     }
 
 }

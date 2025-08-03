@@ -1,7 +1,9 @@
+using ManaFood.Application.Dtos;
+
 namespace ManaFood.Application.Interfaces
 {
     public interface IPaymentService
     {
-        Task<string> CreatePaymentAsync(Guid orderId);
+        Task<CreatePaymentResponse> CreatePaymentAsync(Guid orderId);
     }
 }

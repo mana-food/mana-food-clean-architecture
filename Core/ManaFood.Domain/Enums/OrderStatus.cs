@@ -1,11 +1,9 @@
 public enum OrderStatus
 {
-    AGUARDANDO_PAGAMENTO = 0,
-    CANCELADO = 1,
-    RECEBIDO = 2,
-    PREPARANDO = 3,
-    PRONTO = 4,
-    FINALIZADO = 5,
-    APROVADO = 6,
-    RECUSADO = 7
+    CREATED = 1,
+    RECEIVED = 2,
+    PREPARING = 3,
+    READY = 4,
+    FINISHED = 5,
+    REJECTED = 6
 }

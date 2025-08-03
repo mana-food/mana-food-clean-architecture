@@ -46,7 +46,6 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderDto>
         var order = new Order
         {
             PaymentMethod = (PaymentMethod)request.PaymentMethod,
-            OrderStatus = OrderStatus.AGUARDANDO_PAGAMENTO,
             OrderConfirmationTime = null,
             Products = orderProducts
         };

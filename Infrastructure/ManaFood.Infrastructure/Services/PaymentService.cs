@@ -1,13 +1,11 @@
-using System;
-using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
-using System.Linq;
 using ManaFood.Application.Interfaces;
 using ManaFood.Domain.Entities;
+using QRCoder;
+using ManaFood.Application.Dtos;
 
 namespace ManaFood.Infrastructure.Services
 {
@@ -24,7 +22,7 @@ namespace ManaFood.Infrastructure.Services
             _orderRepository = orderRepository;
         }
 
-        public async Task<string> CreatePaymentAsync(Guid orderId)
+        public async Task<CreatePaymentResponse> CreatePaymentAsync(Guid orderId)
         {
             Console.WriteLine($"🔍 Buscando pedido {orderId} no banco...");
             var order = await _orderRepository.GetByIdWithProductsAsync(orderId);
@@ -93,7 +91,30 @@ namespace ManaFood.Infrastructure.Services
             Console.WriteLine("✅ Pagamento criado com sucesso!");
             Console.WriteLine("📥 Resposta:\n" + responseContent);
 
-            return responseContent;
+            using var doc = JsonDocument.Parse(responseContent);
+            var root = doc.RootElement;
+
+            var qrData = root.GetProperty("qr_data").GetString();
+            var paymentId = root.GetProperty("id").GetString();
+
+            string qrCodeBase64 = GenerateQrCodeBase64(qrData!);
+
+            return new CreatePaymentResponse
+            {
+                PaymentId = paymentId!,
+                QrData = qrData!,
+                QrCodeBase64 = qrCodeBase64
+            };
+        }
+
+        private string GenerateQrCodeBase64(string qrData)
+        {
+            using var qrGenerator = new QRCodeGenerator();
+            using var qrCodeData = qrGenerator.CreateQrCode(qrData, QRCodeGenerator.ECCLevel.Q);
+            using var qrCode = new PngByteQRCode(qrCodeData);
+            var qrBytes = qrCode.GetGraphic(20);
+
+            return Convert.ToBase64String(qrBytes);
         }
     }
 }

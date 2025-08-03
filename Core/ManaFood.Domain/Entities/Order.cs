@@ -19,7 +19,9 @@ public class Order : BaseEntity
         OrderStatus = status;
         UpdatedAt = DateTime.UtcNow;
 
-        if (status == OrderStatus.APROVADO)
+        if (status == OrderStatus.RECEIVED)
+        {
             OrderConfirmationTime = DateTime.UtcNow;
+        }
     }
 }

@@ -16,32 +16,22 @@ namespace ManaFood.Infrastructure.Services.MercadoPago
             _config = config;
         }
 
-        public async Task<(string status, string orderId)> GetPaymentStatusAsync(string paymentId)
+        public async Task<(string status, string orderId)> GetPaymentStatusAsync(string merchantOrderId)
         {
             _httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", _config.AccessToken);
 
-            if (!paymentId.StartsWith("ORD"))
-                throw new ArgumentException("O paymentId fornecido não é um ID válido de Order (esperado prefixo 'ORD').");
-
-            var response = await _httpClient.GetAsync($"https://api.mercadopago.com/v1/orders/{paymentId}");
+            var response = await _httpClient.GetAsync($"https://api.mercadopago.com/merchant_orders/{merchantOrderId}");
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
             using var doc = JsonDocument.Parse(content);
 
-            var payments = doc.RootElement.GetProperty("transactions").GetProperty("payments");
-
-            if (payments.GetArrayLength() == 0)
-                throw new Exception("Nenhum pagamento associado à Order.");
-
-            var firstPayment = payments[0];
-            var status = firstPayment.GetProperty("status").GetString()!;
-            var orderId = doc.RootElement.GetProperty("external_reference").GetString()!;
+            var root = doc.RootElement;
+            var status = root.GetProperty("status").GetString()!; // "closed" [pedido foi pago com sucesso], "opened" [pedido ainda não foi pago]
+            var orderId = root.GetProperty("external_reference").GetString()!;
 
             return (status, orderId);
-
         }
-
     }
 }
