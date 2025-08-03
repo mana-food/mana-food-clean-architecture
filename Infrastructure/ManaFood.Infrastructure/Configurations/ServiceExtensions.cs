@@ -12,7 +12,7 @@ public static class ServiceExtensions
     public static void ConfigurePersistenceApp(this IServiceCollection services,
                                                 IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("MySql");
+        var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
         services.AddDbContext<ApplicationContext>(opt =>
             opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 

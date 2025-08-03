@@ -14,7 +14,8 @@
         "MERCADOPAGO_USER_ID": "2520145005",
         "MERCADOPAGO_STORE_ID":"73217248",
         "MERCADOPAGO_EXTERNAL_STORE_ID": "MANAFOOD_STORE_002",
-        "MERCADOPAGO_EXTERNAL_POS_ID":"POSMANAFOOD002"
+        "MERCADOPAGO_EXTERNAL_POS_ID":"POSMANAFOOD002",
+        "CONNECTION_STRING": "server=localhost;port=3306;database=db_manafood;user=root;password=senha123"
       }
     },
     "https": {
@@ -30,8 +31,9 @@
         "MERCADOPAGO_USER_ID": "2520145005",
         "MERCADOPAGO_STORE_ID":"73217248",
         "MERCADOPAGO_EXTERNAL_STORE_ID": "MANAFOOD_STORE_002",
-        "MERCADOPAGO_EXTERNAL_POS_ID":"POSMANAFOOD002"
-      }
+        "MERCADOPAGO_EXTERNAL_POS_ID":"POSMANAFOOD002",
+        "CONNECTION_STRING": "server=localhost;port=3306;database=db_manafood;user=root;password=senha123"
+      },
     }
   }
 }

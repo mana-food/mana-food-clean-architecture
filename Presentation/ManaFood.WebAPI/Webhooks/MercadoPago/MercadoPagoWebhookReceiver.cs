@@ -24,7 +24,6 @@ public class MercadoPagoWebhookReceiver : ControllerBase
         }
 
         var command = new ConfirmPaymentCommand(payload.Data.Id.ToString());
-        Console.WriteLine($"[Webhook] Tipo do ID recebido: {payload.Data.Id.GetType()} — valor: {payload.Data.Id}");
 
         await _mediator.Send(command);
 

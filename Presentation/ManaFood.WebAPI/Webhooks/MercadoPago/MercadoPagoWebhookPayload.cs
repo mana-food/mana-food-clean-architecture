@@ -6,7 +6,6 @@ namespace ManaFood.WebAPI.Webhooks.MercadoPago
     public class MercadoPagoWebhookPayload
     {
         public MercadoPagoData Data { get; set; }
-        public string Type { get; set; }
     }
 
     public class MercadoPagoData

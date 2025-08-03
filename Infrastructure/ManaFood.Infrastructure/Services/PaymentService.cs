@@ -24,13 +24,10 @@ namespace ManaFood.Infrastructure.Services
 
         public async Task<CreatePaymentResponse> CreatePaymentAsync(Guid orderId)
         {
-            Console.WriteLine($"🔍 Buscando pedido {orderId} no banco...");
             var order = await _orderRepository.GetByIdWithProductsAsync(orderId);
 
             if (order == null)
                 throw new Exception($"Pedido {orderId} não encontrado.");
-
-            Console.WriteLine($"📦 Pedido encontrado! Total: R${order.TotalAmount:F2}");
 
             var externalReference = order.Id.ToString();
 
@@ -49,7 +46,7 @@ namespace ManaFood.Infrastructure.Services
             var body = new
             {
                 external_reference = externalReference,
-                title = $"Pedido {externalReference[..8]}", // primeiros 8 chars do GUID
+                title = $"Pedido {externalReference[..8]}",
                 description = $"Pedido com {items.Length} item(ns)",
                 notification_url = _config.NotificationUrl,
                 total_amount = order.TotalAmount,
@@ -68,28 +65,18 @@ namespace ManaFood.Infrastructure.Services
 
             var json = JsonSerializer.Serialize(body, new JsonSerializerOptions { WriteIndented = true });
 
-            Console.WriteLine("📨 Enviando payload para Mercado Pago...");
-            Console.WriteLine($"🔗 Endpoint: {request.RequestUri}");
-            Console.WriteLine($"🧾 External Reference: {externalReference}");
-            Console.WriteLine($"📦 JSON:\n{json}");
-
             request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
             {
-                Console.WriteLine("❌ Erro ao criar pagamento:");
-                Console.WriteLine($"Status: {response.StatusCode}");
-                Console.WriteLine(await response.Content.ReadAsStringAsync());
+               throw new Exception($"Erro de chamada!");
             }
 
             response.EnsureSuccessStatusCode();
 
             var responseContent = await response.Content.ReadAsStringAsync();
-
-            Console.WriteLine("✅ Pagamento criado com sucesso!");
-            Console.WriteLine("📥 Resposta:\n" + responseContent);
 
             using var doc = JsonDocument.Parse(responseContent);
             var root = doc.RootElement;
