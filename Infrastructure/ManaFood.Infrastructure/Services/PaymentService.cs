@@ -95,7 +95,7 @@ namespace ManaFood.Infrastructure.Services
             var root = doc.RootElement;
 
             var qrData = root.GetProperty("qr_data").GetString();
-            var paymentId = root.GetProperty("id").GetString();
+            var paymentId = root.GetProperty("in_store_order_id").GetString();
 
             string qrCodeBase64 = GenerateQrCodeBase64(qrData!);
 
