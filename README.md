@@ -108,16 +108,7 @@ Certifique-se de ter o [.NET 9](https://dotnet.microsoft.com/en-us/download/dotn
      }
    }
    ```
-# Antes de executar a aplicação, configure as variáveis de ambiente (atentar às informações abaixo, acerca do uso do "Ngrok"):
 
-   ```sh
-   export MERCADOPAGO_ACCESS_TOKEN="Bearer APP_USR-5251872727110258-072718-de98b9eff797cd7225c74f9dd7fdd352-2520145005"
-   export MERCADOPAGO_NOTIFICATION_URL="https://SEU_NGROK_ID.ngrok-free.app/api/webhooks/mercadopago/payment-confirmation"
-   export MERCADOPAGO_USER_ID="2520145005"
-   export MERCADOPAGO_STORE_ID="73217248"
-   export MERCADOPAGO_EXTERNAL_STORE_ID="MANAFOOD_STORE_002"
-   export MERCADOPAGO_EXTERNAL_POS_ID="POSMANAFOOD002"
-   ```
    # Utilização do Ngrok para Webhook
    A variável MERCADOPAGO_NOTIFICATION_URL deve conter um endpoint público, para que o Mercado Pago envie notificações. Como a aplicação roda localmente, usamos o Ngrok para gerar esse link acessível pela internet. Contudo, esse link muda sempre que o Ngrok é reiniciado. Por esse motivo, disponibilizamos os passos abaixo, possibilitando a sequência de testes.
 
