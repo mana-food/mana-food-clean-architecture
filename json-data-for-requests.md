@@ -5,7 +5,7 @@
     "email": "joao@exemplo.com",
     "name": "João",
     "birthday": "1999-04-04",
-    "user_type": 1, // cliente
+    "userType": 1, // cliente
     "cpf": "22254634097",
     "password": "joao@123"
   },
@@ -13,7 +13,7 @@
     "email": "maria@exemplo.com",
     "name": "Maria",
     "birthday": "1995-08-15",
-    "user_type": 0, // admin
+    "userType": 0, // admin
     "cpf": "12345678901",
     "password": "maria@123"
   },
@@ -21,7 +21,7 @@
     "email": "carlos@exemplo.com",
     "name": "Carlos",
     "birthday": "1988-12-22",
-    "user_type": 2, // cozinha
+    "userType": 2, // cozinha
     "cpf": "98765432100",
     "password": "carlos@123"
   },
@@ -29,7 +29,7 @@
     "email": "ana@exemplo.com",
     "name": "Ana",
     "birthday": "2000-03-10",
-    "user_type": 3, // operador
+    "userType": 3, // operador
     "cpf": "45678912345",
     "password": "ana@123"
   },
@@ -37,7 +37,7 @@
     "email": "pedro@exemplo.com",
     "name": "Pedro",
     "birthday": "1992-07-30",
-    "user_type": 4, //manager
+    "userType": 4, //manager
     "cpf": "32165498712",
     "password": "pedro@123"
   }
