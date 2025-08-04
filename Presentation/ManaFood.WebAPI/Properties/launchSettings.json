@@ -33,7 +33,7 @@
         "MERCADOPAGO_EXTERNAL_STORE_ID": "MANAFOOD_STORE_002",
         "MERCADOPAGO_EXTERNAL_POS_ID":"POSMANAFOOD002",
         "CONNECTION_STRING": "server=localhost;port=3306;database=db_manafood;user=root;password=senha123"
-      },
+      }
     }
   }
 }
