@@ -1,9 +1,9 @@
 # Maná Food
 
-# Diagrama - Resquisitos do Negócio
+## Diagrama - Resquisitos do Negócio
 ![Diagrama de requisitos](Assets/DiagramaRequisitos_ManaFood.png)
 
-# Diagrama - Infraestrutura para fase II
+## Diagrama - Infraestrutura para fase II
 ![Diagrama de infraestrutura aplicada na fase II](Assets/DiagramaInfraestrutura_ManaFood.png)
 
 ## Estrutura de Pastas
@@ -51,7 +51,7 @@ mana-food-clean-architecture/
 - **Core/ManaFood.Application/**: Implementa os casos de uso da aplicação, validações, comportamentos compartilhados e configurações específicas da camada de aplicação.
 - **Core/ManaFood.Domain/**: Contém as entidades de domínio, interfaces e regras de negócio puras, sem dependências externas.
 - **Infrastructure/ManaFood.Infrastructure/**: Responsável pela implementação da infraestrutura, como acesso a banco de dados, repositórios, contexto do Entity Framework e configurações relacionadas à persistência.
-- **Presentation/ManaFood.WebAPI/**: Camada de apresentação, onde ficam os controllers da API, configurações do ASP.NET Core, arquivos de configuração (appsettings) e propriedades do projeto.
+- **Presentation/ManaFood.WebAPI/**: Camada de apresentação, onde ficam os controllers da API e Webhook, configurações do ASP.NET Core, arquivos de configuração (appsettings) e propriedades do projeto.
 
 ## Explicação do Docker
 
@@ -74,24 +74,22 @@ O `docker-compose.yml` orquestra múltiplos containers. Aqui, ele:
 
 ---
 
-## Meio de Pagamento: QRCode Mercado Pago, integrado para acione de Webhook mediante aprovação
+## Meio de Pagamento: QRCode Mercado Pago | Integração para Webhook - Pagamento Aprovado
 
-   O cadastro de webhook do Mercado Pago carece de cadastro de URL pública, para resposta. Portanto, selecionamos o serviço "Ngrok".
-   O Ngrok é uma ferramenta que cria um túnel seguro da internet para sua máquina local. Em outras palavras:
-
-   Ele gera um link público (tipo https://7cdbccf5ea42.ngrok-free.app) que redireciona para o seu servidor local (http://localhost:5111), mesmo que você esteja atrás de um roteador, firewall ou em uma rede privada.
-
-   # Utilização do Ngrok para Webhook
-   A variável MERCADOPAGO_NOTIFICATION_URL deve conter um endpoint público, para que o Mercado Pago envie notificações. Como a aplicação roda localmente, usamos o Ngrok para gerar esse link acessível pela internet. Contudo, esse link muda sempre que o Ngrok é reiniciado. Por esse motivo, disponibilizamos os passos abaixo, possibilitando a sequência de testes.
-"SEU-ID-NGROK" -> informar*********
-   # Como usar o Ngrok para o webhook
+   A criação do Webhook com integração no Mercado Pago solicita o cadastro de uma URL pública para resposta. Portanto, selecionamos o serviço "Ngrok" na performance desta ação.
+   
+   Acesse a ferramenta Ngrok [aqui](https://ngrok.com/).
+   
+   Ngrok é uma ferramenta que cria um túnel seguro da internet para sua máquina local. Em outras palavras, ele gera um link público (tipo https://7cdbccf5ea42.ngrok-free.app) que redireciona para o seu servidor local (http://localhost:port), mesmo que você esteja atrás de um roteador, firewall ou em uma rede privada. 
+   
+   Como o link Ngrok muda sempre que o acesso é reiniciado, disponibilizamos os passos abaixo para utilização da ferramenta - Como usar o Ngrok para o webhook:
 
    1 - Instale o Ngrok.
-   2 - No terminal, execute o comando: 
+   
+   2 - No terminal, execute o comando abaixo para gerar a URL pública no Ngrok. Esta URL será inserida no arquivo de configurações, na sequência de execução subsequente. 
    ```sh
    ngrok http https://localhost:5111
    ```
-   3 - Copie o ID gerado (ex: https://SEU_NGROK_ID.ngrok-free.app), atualizando a string da variável de ambiente "MERCADOPAGO_NOTIFICATION_URL".
 
 ## Como executar o projeto
 
@@ -104,7 +102,7 @@ cd mana-food-clean-architecture
 
 ### 2. Executando localmente
 
-Certifique-se de ter o [.NET 9](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) instalado e um banco de dados MySQL rodando.
+Certifique-se de ter o [.NET 9](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) instalado e de que um banco de dados MySQL esteja em execução.
 
 1. Navegue até o arquivo de configuração:
    ```
@@ -113,35 +111,33 @@ Certifique-se de ter o [.NET 9](https://dotnet.microsoft.com/en-us/download/dotn
 
 2. Localize a chave `CONNECTION_STRING`.
 
-2. 1. Substitua os valores:
-   - `server`: Endereço do servidor (mantenha se for local)
-   - `port`: 3306
-   - `database`: Nome do banco (será criado automaticamente)
-   - `user`: Seu usuário do MySQL
-   - `password`: Sua senha do MySQL
+   2.1. Substitua os valores:
+      - `server`: Endereço do servidor (mantenha se for local)
+      - `port`: 3306
+      - `database`: Nome do banco (será criado automaticamente)
+      - `user`: Seu usuário do MySQL
+      - `password`: Sua senha do MySQL
 
-2. 2. Exemplo de configuração:
-   ```json
-   {
-     "ConnectionStrings": {
-       "DefaultConnection": "server=localhost;database=manafood;user=root;password=123456;charset=utf8mb4;"
-     }
-   }
-   ```
+3. Localize as variáveis de ambiente:
 
-   # Utilização do Ngrok para Webhook
-   A variável MERCADOPAGO_NOTIFICATION_URL deve conter um endpoint público, para que o Mercado Pago envie notificações. Como a aplicação roda localmente, usamos o Ngrok para gerar esse link acessível pela internet. Contudo, esse link muda sempre que o Ngrok é reiniciado. Por esse motivo, disponibilizamos os passos abaixo, possibilitando a sequência de testes.
+         MERCADOPAGO_ACCESS_TOKEN
+      
+         MERCADOPAGO_NOTIFICATION_URL
+      
+         MERCADOPAGO_USER_ID
+      
+         MERCADOPAGO_STORE_ID
+      
+         MERCADOPAGO_EXTERNAL_STORE_ID
+      
+         MERCADOPAGO_EXTERNAL_POS_ID
+     
+      - Utilize o ID Ngrok gerado anteriormente (ex: https://SEU_NGROK_ID.ngrok-free.app), atualizando o texto da chave "MERCADOPAGO_NOTIFICATION_URL".
+  
+5. Crie uma conta de teste com o perfil "cliente" e forma de pagamento "QRCode" para pagamento do QRCode que será gerado na aplicação, conforme passos disponibilizados [aqui](https://www.mercadopago.com.br/developers/pt/docs/qr-code/additional-content/your-integrations/test/accounts).
+   A conta de teste deverá ser acessada via aplicativo para leitura da imagem QR e quando efetivado o pagamento, reserve o número da operação. Este número deverá ser alimentado na chamada "payment-confirmation" no campo "ID" dos passos abaixo "Ordem de execução das APIs" parar gerar a notificação Webhook, confirmando o sucesso da operação.
 
-   # Como usar o Ngrok para o webhook
-
-   1 - Instale o Ngrok.
-   2 - No terminal, execute o comando: 
-   ```sh
-   ngrok http https://localhost:5111
-   ```
-   3 - Copie o ID gerado (ex: https://SEU_NGROK_ID.ngrok-free.app), atualizando a string da variável de ambiente "MERCADOPAGO_NOTIFICATION_URL".
-
-3. Execute a aplicação:
+7. Execute a aplicação:
 
     ```sh
     dotnet run --project Presentation/ManaFood.WebAPI/ManaFood.WebAPI.csproj
@@ -167,51 +163,24 @@ Segue um passo a passo simples para rodar os containers do projeto:
 3. **Verifique se os arquivos `docker-compose.yml` e `Presentation/ManaFood.WebAPI/Dockerfile` existem.**  
    Eles já estão prontos no projeto.
 
-4. Navegue até o arquivo de configuração:
-   ```
-   Presentation/ManaFood.WebAPI/appsettings.json
-   ```
-
-5. Localize a seção `ConnectionStrings`:
-   ```json
-   {
-     "ConnectionStrings": {
-       "DefaultConnection": "server=localhost;port=porta;database=nome_do_banco;user=seu_usuario;password=sua_senha;"
-     }
-   }
-   ```
-
-6. Substitua os valores:
-   - `seu_usuario`: Seu usuário do MySQL configurado no docker-compose.yml
-   - `sua_senha`: Sua senha do MySQL no docker-compose.yml
-   - `localhost`: Endereço do servidor (nome do serviço docker)
-   - `nome_do_banco`: Nome do banco configurado no docker-compose.yml  
-
-7. Configure a seção `ConnectionStrings` dessa forma:
-   ```json
-   {
-     "ConnectionStrings": {
-       "DefaultConnection": "server=db-mana-food;port=3307;database=db_manafood;user=root;password=senha123"
-     }
-   }
-   ```
-
-8. **Suba os containers:**  
+4. Certifique-se de que o arquivo de configuração esteja alinhado com as instruções anteriores (launchSettings.json).
+  
+5. **Suba os containers:**  
    No terminal, na raiz do projeto, execute:
    ```sh
    docker-compose up --build
    ```
 
-9. **Aguarde a inicialização.**  
+6. **Aguarde a inicialização.**  
    O Docker irá baixar as imagens necessárias, criar os containers e iniciar a aplicação.
 
 
-10. **Acesse a aplicação:**  
+7. **Acesse a aplicação:**  
    - API: [http://localhost:8080/index.html](http://localhost:8080/index.html)  
    - MySQL: `localhost:3306` -> Verifique o usuário e senha no `docker-compose.yml`
 
 
-11. **Para parar os containers:**  
+8. **Para parar os containers:**  
    Pressione `Ctrl+C` no terminal ou execute:
    ```sh
    docker-compose down
