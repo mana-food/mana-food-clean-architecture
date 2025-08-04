@@ -14,20 +14,15 @@ spec:
     spec:
       containers:
         - name: manafood-api
-          image: yourdockerhub/manafood-api:latest
+          image: manafood-api:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
-          env:
-            - name: DB_HOST
-              value: manafood-mysql
-            - name: DB_PORT
-              value: "3306"
-            - name: DB_USER
-              value: root
-            - name: DB_PASSWORD
-              value: senha123
-            - name: DB_NAME
-              value: db_manafood
+          envFrom:
+            - configMapRef:
+                name: manafood-config
+            - secretRef:
+                name: manafood-secrets
           resources:
             requests:
               cpu: "100m"
