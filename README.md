@@ -4,7 +4,7 @@
 ![Diagrama de requisitos](Assets/DiagramaRequisitos_ManaFood.png)
 
 ## Diagrama - Infraestrutura para fase II
-![Diagrama de infraestrutura aplicada na fase II](Assets/DiagramaInfraestrutura_ManaFood.png)
+![Diagrama de infraestrutura aplicada na fase II](Assets/Kubernetes_ManaFood.png)
 
 ## Estrutura de Pastas
 
@@ -25,7 +25,7 @@ mana-food-clean-architecture/
 │           ├── Configuration/
 │           ├── Context/
 │           └── Repositories/
-├── k8s/
+├── k8s/                           # Infraestrutura Kubernetes utilizando IAC
 ├── Presentation/
 │   └── ManaFood.WebAPI/           # Camada de apresentação (controllers, configuração da API)
 │       ├── Controllers/
@@ -186,6 +186,56 @@ Segue um passo a passo simples para rodar os containers do projeto:
    docker-compose down
    ```
 
+### Como rodar os containers com Kubernetes
+
+1. **Pré-requisitos**
+   Certifique-se de ter o [Kubernetes](https://kubernetes.io/) e o [Minikube](https://minikube.sigs.k8s.io/docs/start/) instalados em sua máquina.
+
+2. **Registre a localmente a imagem utilizando o Minikube**
+   No terminal, realize os seguintes comandos:
+   ```
+   cd Presentation/ManaFood.WebAPI
+   eval $(minikube docker-env)
+   docker build -t manafood-api:latest .
+   ```
+   Com isso, o minikube acessará a imagem se a necessidade de um registry externo
+
+3. **Implemente o manifesto Kubernetes**
+   
+   1. No terminal, na raiz do projeto, realize os comandos na sequencia abaixo:
+   ```
+   cd k8s
+   kubectl applly -f api-configmap.yaml
+   kubectl applly -f api-secret.yaml
+   kubectl applly -f db-service.yaml
+   kubectl applly -f db-deployment.yaml
+   kubectl applly -f api-service.yaml
+   kubectl applly -f api-deployment.yaml
+   kubectl applly -f api-hpa.yaml
+   ```
+   Serão criados sequencialmente:
+
+   - ConfigMaps: Variáveis de ambiente do sistema
+   - Secrets: Variáveis de ambiente que possuem dados sensíveis
+   - Db Service: Cluster para o banco de dados
+   - Db Deployment: Pod com suas devidas réplicas e especificações
+   - API Service: LoadBalancer para a API
+   - API Deployment: Pod com suas devidas réplicas e especificações
+   - API HPA: Horizontal auto-scaling para os pods implementados em API Deployment
+
+   Feito isso, valide os status dos seus pods e config pela interface do Minekube
+
+   2. Também no terminal, rode o seguinte comandos:    
+   ```
+   minikube start
+   ```
+   E depois
+   ```
+   minikube dashboard
+   ```
+   A seguinte interface aparecerá para realizar o gerenciamento de Kubernetes:
+
+   ![Minikube Dashboard](Assets/Minikube_ManaFood.png)
 ---
 
 ### 4. Gerar migrations com EF Core
