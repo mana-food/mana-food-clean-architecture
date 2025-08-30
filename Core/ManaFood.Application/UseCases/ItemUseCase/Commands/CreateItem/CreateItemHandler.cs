@@ -16,14 +16,14 @@ public class CreateItemHandler : IRequestHandler<CreateItemCommand, ItemDto>
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
+        _mapper     = mapper;
     }
 
     public async Task<ItemDto> Handle(CreateItemCommand request,
         CancellationToken cancellationToken)
     {
 
-        var item = _mapper.Map<Item>(request);
+        var item    = _mapper.Map<Item>(request);
 
         await _repository.Create(item, cancellationToken);
 

@@ -31,27 +31,27 @@ namespace ManaFood.Infrastructure.Services
 
             var externalReference = order.Id.ToString();
 
-            var items = order.Products.Select(p => new
+            var items           = order.Products.Select(p => new
             {
-                sku_number = p.Product.Id.ToString(),
-                category = "marketplace",
-                title = p.Product.Name,
-                description = p.Product.Description ?? "Produto sem descrição",
-                unit_price = p.Product.UnitPrice,
-                quantity = p.Quantity,
-                unit_measure = "unit",
-                total_amount = p.Product.UnitPrice * p.Quantity
+                sku_number      = p.Product.Id.ToString(),
+                category        = "marketplace",
+                title           = p.Product.Name,
+                description     = p.Product.Description ?? "Produto sem descrição",
+                unit_price      = p.Product.UnitPrice,
+                quantity        = p.Quantity,
+                unit_measure    = "unit",
+                total_amount    = p.Product.UnitPrice * p.Quantity
             }).ToArray();
 
             var body = new
             {
-                external_reference = externalReference,
-                title = $"Pedido {externalReference[..8]}",
-                description = $"Pedido com {items.Length} item(ns)",
-                notification_url = _config.NotificationUrl,
-                total_amount = order.TotalAmount,
-                items = items,
-                cash_out = new { amount = 0 }
+                external_reference  = externalReference,
+                title               = $"Pedido {externalReference[..8]}",
+                description         = $"Pedido com {items.Length} item(ns)",
+                notification_url    = _config.NotificationUrl,
+                total_amount        = order.TotalAmount,
+                items               = items,
+                cash_out            = new { amount = 0 }
             };
 
             var request = new HttpRequestMessage(
@@ -59,15 +59,15 @@ namespace ManaFood.Infrastructure.Services
                 $"https://api.mercadopago.com/instore/orders/qr/seller/collectors/{_config.UserId}/pos/{_config.ExternalPosId}/qrs"
             );
 
-            var idempotencyKey = Guid.NewGuid().ToString();
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _config.AccessToken);
+            var idempotencyKey              = Guid.NewGuid().ToString();
+            request.Headers.Authorization   = new AuthenticationHeaderValue("Bearer", _config.AccessToken);
             request.Headers.Add("X-Idempotency-Key", idempotencyKey);
 
-            var json = JsonSerializer.Serialize(body, new JsonSerializerOptions { WriteIndented = true });
+            var json            = JsonSerializer.Serialize(body, new JsonSerializerOptions { WriteIndented = true });
 
-            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            request.Content     = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.SendAsync(request);
+            var response        = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -78,28 +78,28 @@ namespace ManaFood.Infrastructure.Services
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            using var doc = JsonDocument.Parse(responseContent);
-            var root = doc.RootElement;
+            using var doc       = JsonDocument.Parse(responseContent);
+            var root            = doc.RootElement;
 
-            var qrData = root.GetProperty("qr_data").GetString();
-            var paymentId = root.GetProperty("in_store_order_id").GetString();
+            var qrData          = root.GetProperty("qr_data").GetString();
+            var paymentId       = root.GetProperty("in_store_order_id").GetString();
 
             string qrCodeBase64 = GenerateQrCodeBase64(qrData!);
 
             return new CreatePaymentResponse
             {
-                PaymentId = paymentId!,
-                QrData = qrData!,
-                QrCodeBase64 = qrCodeBase64
+                PaymentId       = paymentId!,
+                QrData          = qrData!,
+                QrCodeBase64    = qrCodeBase64
             };
         }
 
         private string GenerateQrCodeBase64(string qrData)
         {
-            using var qrGenerator = new QRCodeGenerator();
-            using var qrCodeData = qrGenerator.CreateQrCode(qrData, QRCodeGenerator.ECCLevel.Q);
-            using var qrCode = new PngByteQRCode(qrCodeData);
-            var qrBytes = qrCode.GetGraphic(20);
+            using var qrGenerator   = new QRCodeGenerator();
+            using var qrCodeData    = qrGenerator.CreateQrCode(qrData, QRCodeGenerator.ECCLevel.Q);
+            using var qrCode        = new PngByteQRCode(qrCodeData);
+            var qrBytes             = qrCode.GetGraphic(20);
 
             return Convert.ToBase64String(qrBytes);
         }

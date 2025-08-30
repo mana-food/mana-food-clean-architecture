@@ -14,40 +14,32 @@ namespace ManaFood.WebAPI.Controllers
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly IPaymentService _paymentService;
-        private readonly IOrderRepository _orderRepository;
 
         public PaymentClientController(
             IMediator mediator,
             IMapper mapper,
-            IPaymentService paymentService,
-            IOrderRepository orderRepository)
+            IPaymentService paymentService)
         {
             _mediator = mediator;
             _mapper = mapper;
             _paymentService = paymentService;
-            _orderRepository = orderRepository;
         }
 
         [HttpPost("checkout")]
         public async Task<ActionResult<CreatePaymentResponse>> CreatePayment([FromBody] CreatePaymentRequest request)
         {
             var command = _mapper.Map<CreatePaymentCommand>(request);
-            var result = await _mediator.Send(command);
+            var result  = await _mediator.Send(command);
             return Ok(result);
         }
 
         [HttpGet("qr-image/{orderId}")]
         public async Task<IActionResult> GetQrImage(Guid orderId)
         {
-            var order = await _orderRepository.GetByIdWithProductsAsync(orderId);
-            if (order == null)
-                return NotFound("Pedido não encontrado.");
+            var response    = await _paymentService.CreatePaymentAsync(orderId);
 
-            var response = await _paymentService.CreatePaymentAsync(orderId);
+            var imageBytes  = Convert.FromBase64String(response.QrCodeBase64);
 
-            var imageBytes = Convert.FromBase64String(response.QrCodeBase64);
-
-            // Retorna a imagem como PNG
             return File(imageBytes, "image/png");
         }
     }
