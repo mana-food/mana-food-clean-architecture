@@ -5,6 +5,7 @@
 
 ## Diagrama - Infraestrutura para fase II
 ![Diagrama de infraestrutura aplicada na fase II](Assets/Kubernetes_ManaFood.png)
+![Minikube - Infraestrutura aplicada na fase II](Assets/Minikube_ManaFood.png)
 
 ## Estrutura de Pastas
 
