@@ -44,6 +44,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}  # importante para push do PR
+          fetch-depth: 0   # importante para detectar mudanças
 
       - name: Criar Pull Request
         uses: peter-evans/create-pull-request@v6
