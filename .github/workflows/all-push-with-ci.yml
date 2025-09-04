@@ -40,16 +40,17 @@ jobs:
     steps:
       - name: Checkout código
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}  # importante para push do PR
 
       - name: Criar Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          base: main                     # branch de destino do PR
-          branch: ${{ github.ref_name }} # branch de origem (a que sofreu o push)
+          base: main
+          branch: ${{ github.ref_name }}
           title: "PR criada automaticamente para main - ${{ github.ref_name }}"
-          body: |
-            🚀 Pull request automático criado a partir do push em `${{ github.ref_name }}`.
+          body: "🚀 Pull request automático criado a partir do push em `${{ github.ref_name }}`."
           draft: false
           labels: |
             automerge
