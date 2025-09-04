@@ -1,12 +1,12 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: CI/CD Pipeline - C# (.NET)
+name: CI/CD Pipeline - C# (.NET) | Auto Pull Request
 
 on:
   push:
-    branches:
-      - "**" # todas as branches
+    branches-ignore:
+      - main   # ignora pushes na main, só roda nas outras branches
   
 
 jobs:
@@ -32,3 +32,25 @@ jobs:
       
     - name: Rodar Testes
       run: dotnet test --configuration Release --no-build --verbosity normal
+      
+  # 2. Criar ou atualizar Pull Request
+  create-pr:
+    needs: build-and-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Criar Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main                     # branch de destino do PR
+          branch: ${{ github.ref_name }} # branch de origem (a que sofreu o push)
+          title: "PR criada automaticamente para main - ${{ github.ref_name }}"
+          body: |
+            🚀 Pull request automático criado a partir do push em `${{ github.ref_name }}`.
+          draft: false
+          labels: |
+            automerge
+            needs-review
