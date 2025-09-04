@@ -57,4 +57,3 @@ jobs:
           labels: |
             automerge
             needs-review
-          update-existing: true
