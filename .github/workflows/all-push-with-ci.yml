@@ -46,15 +46,13 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}  # importante para push do PR
           fetch-depth: 0   # importante para detectar mudanças
 
-      - name: Criar Pull Request
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: main
-          branch: ${{ github.ref_name }}
-          title: "PR criada automaticamente para main - ${{ github.ref_name }}"
-          body: "🚀 Pull request automático criado a partir do push em `${{ github.ref_name }}`."
-          draft: false
-          labels: |
-            automerge
-            needs-review
+      - name: Autenticar CLI
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
+      - name: Criar Pull Request automático
+        run: |
+          gh pr create \
+            --base main \
+            --head "${{ github.ref_name }}" \
+            --title "PR criada automaticamente para main - ${{ github.ref_name }}" \
+            --body "🚀 Pull request automático criado a partir do push em `${{ github.ref_name }}`."
