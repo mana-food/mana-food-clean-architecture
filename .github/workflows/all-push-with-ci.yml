@@ -44,11 +44,11 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}  # importante para push do PR
+          token: ${{ secrets.GH_PAT }}  # importante para push do PR
           fetch-depth: 0   # importante para detectar mudanças
 
       - name: Autenticar CLI
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+        run: echo "${{ secrets.GH_PAT }}" | gh auth login --with-token
 
       - name: Criar Pull Request automático
         run: |
