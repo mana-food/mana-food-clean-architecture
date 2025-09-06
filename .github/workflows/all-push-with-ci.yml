@@ -35,25 +35,3 @@ jobs:
       
     - name: Rodar Testes
       run: dotnet test --configuration Release --no-build --verbosity normal
-      
-  # 2. Criar ou atualizar Pull Request
-  create-pr:
-    needs: build-and-tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout código
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GH_PAT }}  # importante para push do PR
-          fetch-depth: 0   # importante para detectar mudanças
-
-      - name: Autenticar CLI
-        run: echo "${{ secrets.GH_PAT }}" | gh auth login --with-token
-
-      - name: Criar Pull Request automático
-        run: |
-          gh pr create \
-            --base main \
-            --head "${{ github.ref_name }}" \
-            --title "PR criada automaticamente para main - ${{ github.ref_name }}" \
-            --body "🚀 Pull request automático criado a partir do push em `${{ github.ref_name }}`."
