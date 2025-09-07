@@ -1,7 +1,7 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: "[2 - Action Full CD]" # CI/CD Pipeline - C# (.NET) 
+name: "[2 - Action CD]" # CI/CD Pipeline - C# (.NET) 
 
 on:
   push:
@@ -11,14 +11,14 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write   
+  pull-requests: write
 
 jobs:
   # 1. Build e Testes
   build-and-tests:
+
     runs-on: ubuntu-latest
-    outputs:
-      coverage-report-path: ${{ steps.set-coverage-path.outputs.coverage-report-path }}
+
     steps:
       - name: Checkout código
         uses: actions/checkout@v4
@@ -34,43 +34,8 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
 
-      - name: Rodar Testes com cobertura
-        run: dotnet test --configuration Release --no-build --collect:"XPlat Code Coverage" --results-directory ./TestResults
-
-      - name: Listar arquivos de cobertura gerados
-        run: |
-          echo "Arquivos encontrados em ./TestResults:"
-          find ./TestResults
-
-      - name: Converter cobertura para formato OpenCover
-        uses: danielpalme/ReportGenerator-GitHub-Action@5.3.6
-        with:
-          reports: ./TestResults/**/*.cobertura.xml
-          targetdir: ./TestResults/CoverageReport
-          reporttypes: 'opencover'
-
-      - name: Listar arquivos após conversão
-        run: |
-          echo "Arquivos encontrados em ./TestResults/CoverageReport:"
-          find ./TestResults/CoverageReport
-
-      - name: Definir caminho do relatório de cobertura
-        id: set-coverage-path
-        run: |
-          file=$(find ./TestResults/CoverageReport -name "*.opencover.xml" | head -n 1)
-          if [ -f "$file" ]; then
-            echo "coverage-report-path=$file" >> $GITHUB_OUTPUT
-            echo "Arquivo de cobertura encontrado: $file"
-          else
-            echo "Arquivo de cobertura não encontrado!"
-            exit 1
-          fi
-
-      - name: Upload cobertura de teste
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: ${{ steps.set-coverage-path.outputs.coverage-report-path }}
+      - name: Rodar Testes
+        run: dotnet test --configuration Release --no-build --verbosity normal
 
   sonarqube-analysis:
     runs-on: ubuntu-latest
@@ -86,23 +51,16 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Baixar cobertura de teste
-        uses: actions/download-artifact@v4
-        with:
-          name: coverage-report
-          path: ./TestResults/CoverageReport
-
-      - name: Instalar dotnet-sonarscanner
-        run: dotnet tool install --global dotnet-sonarscanner
-
+      - name: Install SonarScanner
+        run: dotnet tool install --global dotnet-sonarscanner    
+      
       - name: SonarQube Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} # geralmente https://sonarcloud.io
         run: |
+          dotnet tool install --global dotnet-sonarscanner
           export PATH="$PATH:/home/runner/.dotnet/tools"
-          file=$(find ./TestResults/CoverageReport -name "*.opencover.xml" | head -n 1)
-          echo "Usando arquivo de cobertura: $file"
           dotnet sonarscanner begin \
             /k:"mana-food-clean-architecture" \
             /o:"mana-food" \
@@ -110,6 +68,6 @@ jobs:
             /d:sonar.login="$SONAR_TOKEN" \
             /d:sonar.projectBaseDir="." \
             /d:sonar.exclusions="**/bin/**,**/obj/**,**/*.dll,**/*.exe" \
-            /d:sonar.cs.opencover.reportsPaths="$file"
+            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
           dotnet build --no-incremental
           dotnet sonarscanner end /d:sonar.login="$SONAR_TOKEN"
