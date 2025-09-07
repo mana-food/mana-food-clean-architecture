@@ -47,8 +47,8 @@ jobs:
       - name: Definir caminho do relatório de cobertura
         id: set-coverage-path
         run: |
-          if [ -f ./TestResults/CoverageReport/Summary.opencover.xml ]; then
-            echo "coverage-report-path=./TestResults/CoverageReport/Summary.opencover.xml" >> $GITHUB_OUTPUT
+          if [ -f ./TestResults/CoverageReport/coverage.opencover.xml ]; then
+            echo "coverage-report-path=./TestResults/CoverageReport/coverage.opencover.xml" >> $GITHUB_OUTPUT
           else
             echo "Arquivo de cobertura não encontrado!"
             exit 1
@@ -58,7 +58,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: ./TestResults/CoverageReport/Summary.opencover.xml
+          path: ./TestResults/CoverageReport/coverage.opencover.xml
 
   sonarqube-analysis:
     runs-on: ubuntu-latest
@@ -96,6 +96,6 @@ jobs:
             /d:sonar.login="$SONAR_TOKEN" \
             /d:sonar.projectBaseDir="." \
             /d:sonar.exclusions="**/bin/**,**/obj/**,**/*.dll,**/*.exe" \
-            /d:sonar.cs.opencover.reportsPaths="TestResults/CoverageReport/Summary.opencover.xml"
+            /d:sonar.cs.opencover.reportsPaths="TestResults/CoverageReport/coverage.opencover.xml"
           dotnet build --no-incremental
           dotnet sonarscanner end /d:sonar.login="$SONAR_TOKEN"
