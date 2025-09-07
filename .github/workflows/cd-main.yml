@@ -57,8 +57,10 @@ jobs:
       - name: Definir caminho do relatório de cobertura
         id: set-coverage-path
         run: |
-          if [ -f ./TestResults/CoverageReport/coverage.opencover.xml ]; then
-            echo "coverage-report-path=./TestResults/CoverageReport/coverage.opencover.xml" >> $GITHUB_OUTPUT
+          file=$(find ./TestResults/CoverageReport -name "*.opencover.xml" | head -n 1)
+          if [ -f "$file" ]; then
+            echo "coverage-report-path=$file" >> $GITHUB_OUTPUT
+            echo "Arquivo de cobertura encontrado: $file"
           else
             echo "Arquivo de cobertura não encontrado!"
             exit 1
@@ -68,7 +70,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: ./TestResults/CoverageReport/coverage.opencover.xml
+          path: ${{ steps.set-coverage-path.outputs.coverage-report-path }}
 
   sonarqube-analysis:
     runs-on: ubuntu-latest
@@ -99,6 +101,8 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
           export PATH="$PATH:/home/runner/.dotnet/tools"
+          file=$(find ./TestResults/CoverageReport -name "*.opencover.xml" | head -n 1)
+          echo "Usando arquivo de cobertura: $file"
           dotnet sonarscanner begin \
             /k:"mana-food-clean-architecture" \
             /o:"mana-food" \
@@ -106,6 +110,6 @@ jobs:
             /d:sonar.login="$SONAR_TOKEN" \
             /d:sonar.projectBaseDir="." \
             /d:sonar.exclusions="**/bin/**,**/obj/**,**/*.dll,**/*.exe" \
-            /d:sonar.cs.opencover.reportsPaths="TestResults/CoverageReport/coverage.opencover.xml"
+            /d:sonar.cs.opencover.reportsPaths="$file"
           dotnet build --no-incremental
           dotnet sonarscanner end /d:sonar.login="$SONAR_TOKEN"
