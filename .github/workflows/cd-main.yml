@@ -64,6 +64,7 @@ jobs:
             /d:sonar.host.url="$SONAR_HOST_URL" \
             /d:sonar.login="$SONAR_TOKEN" \
             /d:sonar.projectBaseDir="." \
+            /d:sonar.exclusions="**/bin/**,**/obj/**" \
             /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
           dotnet build --no-incremental
           dotnet sonarscanner end /d:sonar.login="$SONAR_TOKEN"
