@@ -66,7 +66,6 @@ jobs:
             /o:"mana-food" \
             /d:sonar.host.url="$SONAR_HOST_URL" \
             /d:sonar.login="$SONAR_TOKEN" \
-            /d:sonar.projectBaseDir="." \
             /d:sonar.exclusions="**/bin/**,**/obj/**,**/*.dll,**/*.exe" \
             /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
           dotnet build --no-incremental
