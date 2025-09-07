@@ -16,26 +16,38 @@ permissions:
 jobs:
   # 1. Build e Testes
   build-and-tests:
-
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout código
-      uses: actions/checkout@v4
-      
-    - name: Configurar .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 9.0.x
-        
-    - name: Restaurar dependências
-      run: dotnet restore
-      
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
-      
-    - name: Rodar Testes
-      run: dotnet test --configuration Release --no-build --verbosity normal
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restaurar dependências
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Rodar Testes com cobertura
+        run: dotnet test --configuration Release --no-build --collect:"XPlat Code Coverage" --results-directory ./TestResults
+
+      - name: Converter cobertura para formato OpenCover
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.3.6
+        with:
+          reports: ./TestResults/**/coverage.cobertura.xml
+          targetdir: ./TestResults/CoverageReport
+          reporttypes: 'opencover'
+        # O arquivo gerado será: ./TestResults/CoverageReport/Summary.opencover.xml
+
+      - name: Upload cobertura de teste
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: ./TestResults/CoverageReport/Summary.opencover.xml
 
   sonarqube-analysis:
     runs-on: ubuntu-latest
@@ -51,12 +63,20 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
+      - name: Baixar cobertura de teste
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
+          path: ./TestResults/CoverageReport
+
+      - name: Instalar dotnet-sonarscanner
+        run: dotnet tool install --global dotnet-sonarscanner
+
       - name: SonarQube Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} # geralmente https://sonarcloud.io
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
-          dotnet tool install --global dotnet-sonarscanner
           export PATH="$PATH:/home/runner/.dotnet/tools"
           dotnet sonarscanner begin \
             /k:"mana-food-clean-architecture" \
@@ -65,6 +85,6 @@ jobs:
             /d:sonar.login="$SONAR_TOKEN" \
             /d:sonar.projectBaseDir="." \
             /d:sonar.exclusions="**/bin/**,**/obj/**,**/*.dll,**/*.exe" \
-            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+            /d:sonar.cs.opencover.reportsPaths="TestResults/CoverageReport/Summary.opencover.xml"
           dotnet build --no-incremental
           dotnet sonarscanner end /d:sonar.login="$SONAR_TOKEN"
