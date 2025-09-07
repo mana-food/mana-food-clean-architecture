@@ -17,6 +17,8 @@ jobs:
   # 1. Build e Testes
   build-and-tests:
     runs-on: ubuntu-latest
+    outputs:
+      coverage-report-path: ${{ steps.set-coverage-path.outputs.coverage-report-path }}
     steps:
       - name: Checkout código
         uses: actions/checkout@v4
@@ -41,13 +43,22 @@ jobs:
           reports: ./TestResults/**/coverage.cobertura.xml
           targetdir: ./TestResults/CoverageReport
           reporttypes: 'opencover'
-        # O arquivo gerado será: ./TestResults/CoverageReport/Summary.opencover.xml
+
+      - name: Definir caminho do relatório de cobertura
+        id: set-coverage-path
+        run: |
+          if [ -f ./TestResults/CoverageReport/Summary.opencover.xml ]; then
+            echo "coverage-report-path=./TestResults/CoverageReport/Summary.opencover.xml" >> $GITHUB_OUTPUT
+          else
+            echo "Arquivo de cobertura não encontrado!"
+            exit 1
+          fi
 
       - name: Upload cobertura de teste
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: ./TestResults/CoverageReport
+          path: ./TestResults/CoverageReport/Summary.opencover.xml
 
   sonarqube-analysis:
     runs-on: ubuntu-latest
