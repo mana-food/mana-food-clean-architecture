@@ -62,7 +62,7 @@ jobs:
           dotnet tool install --global dotnet-sonarscanner
           export PATH="$PATH:/home/runner/.dotnet/tools"
           dotnet sonarscanner begin \
-            /k:"mana-food-clean-architecture" \
+            /k:"mana-food_mana-food-clean-architecture" \
             /o:"mana-food" \
             /d:sonar.host.url="$SONAR_HOST_URL" \
             /d:sonar.login="$SONAR_TOKEN" \
