@@ -37,12 +37,22 @@ jobs:
       - name: Rodar Testes com cobertura
         run: dotnet test --configuration Release --no-build --collect:"XPlat Code Coverage" --results-directory ./TestResults
 
+      - name: Listar arquivos de cobertura gerados
+        run: |
+          echo "Arquivos encontrados em ./TestResults:"
+          find ./TestResults
+
       - name: Converter cobertura para formato OpenCover
         uses: danielpalme/ReportGenerator-GitHub-Action@5.3.6
         with:
-          reports: ./TestResults/**/coverage.cobertura.xml
+          reports: ./TestResults/**/*.cobertura.xml
           targetdir: ./TestResults/CoverageReport
           reporttypes: 'opencover'
+
+      - name: Listar arquivos após conversão
+        run: |
+          echo "Arquivos encontrados em ./TestResults/CoverageReport:"
+          find ./TestResults/CoverageReport
 
       - name: Definir caminho do relatório de cobertura
         id: set-coverage-path
