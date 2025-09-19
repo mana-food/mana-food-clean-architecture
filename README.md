@@ -319,7 +319,7 @@ https://chartreuse-fountain-62d.notion.site/203ce57501598031b488df683ec4c8dd?v=2
 https://miro.com/app/board/uXjVIHWEfCI=/
 ```
 
-#### Vídeo Explicativo (YouTube) | FIAP Pós Tech Challenge Fase 2 - Grupo ManaFood (GERENCIAMENTO DE KUBERNETES):
+#### Vídeo Explicativo (YouTube) | FIAP Pós Tech Challenge Fase 2 - Grupo ManaFood (GERENCIAMENTO DE KUBERNETES)::
 ```sh
 https://www.youtube.com/watch?v=60IeDq_nK6I
 ```
