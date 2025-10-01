@@ -155,13 +155,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Trigger infra pipeline
-        uses: peter-evans/repository-dispatch@6c6b8e2e4e2e6e2b2e2e6e2e6e2e6e2e6e2e6e # v2.1.2
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-          repository: mana-food/mana-food-infra
-          event-type: deploy-app
-          client-payload: |
-            {
-              "image": "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
-            }
+      - name: Trigger infra pipeline via GitHub API
+        env:
+          PERSONAL_ACCESS_TOKEN_MANA_FOOD_APP: ${{ secrets.PERSONAL_ACCESS_TOKEN_MANA_FOOD_APP }}
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $PERSONAL_ACCESS_TOKEN_MANA_FOOD_APP" \
+            https://api.github.com/repos/mana-food/mana-food-infra/actions/workflows/<nome-ou-id-do-workflow>.yml/dispatches \
+            -d '{"ref":"main","inputs":{"image":"${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"}}'
