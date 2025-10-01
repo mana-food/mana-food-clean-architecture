@@ -156,7 +156,7 @@ jobs:
           fetch-depth: 0
 
       - name: Trigger infra pipeline
-        uses: peter-evans/repository-dispatch@v2
+        uses: peter-evans/repository-dispatch@6c6b8e2e4e2e6e2b2e2e6e2e6e2e6e2e6e2e6e # v2.1.2
         with:
           token: ${{ secrets.GH_TOKEN }}
           repository: mana-food/mana-food-infra
