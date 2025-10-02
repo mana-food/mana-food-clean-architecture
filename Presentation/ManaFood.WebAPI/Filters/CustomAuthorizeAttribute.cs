@@ -1,63 +1,36 @@
-﻿using ManaFood.Application.Interfaces.Services;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System.Security.Claims;
-using ManaFood.Domain.Entities;
 
 namespace ManaFood.WebAPI.Filters;
 
-public class CustomAuthorizeAttribute : Attribute, IActionFilter
+public class CustomAuthorizeAttribute : Attribute, IAuthorizationFilter
 {
-    private readonly string[] _roles;
-    
-    public CustomAuthorizeAttribute()
+    private readonly string[] _allowedRoles;
+
+    public CustomAuthorizeAttribute(params string[] allowedRoles)
     {
-        _roles = [];
+        _allowedRoles = allowedRoles ?? Array.Empty<string>();
     }
 
-    // Permite receber UserType como parâmetro
-    public CustomAuthorizeAttribute(params UserType[] userTypes)
+    public void OnAuthorization(AuthorizationFilterContext context)
     {
-        _roles = userTypes.Select(ut => ut.ToString()).ToArray();
-    }
-
-    public void OnActionExecuting(ActionExecutingContext context)
-    {
-        var token = context.HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-        var jwtService = (IJwtService) context.HttpContext.RequestServices.GetService(typeof(IJwtService))!;
-        var principal = jwtService?.ValidateToken(token);
-
-        // Valida o token antes de acessar qualquer informação de roles
-        if (principal == null)
+        var user = context.HttpContext.User;
+        
+        if (!user.Identity?.IsAuthenticated == true)
         {
             context.Result = new UnauthorizedResult();
             return;
         }
 
-        context.HttpContext.User = principal;
+        if (_allowedRoles.Length == 0)
+            return; 
 
-        // Só acessa roles se o token for válido
-        if (_roles != null && _roles.Length > 0)
+        var userRole = user.FindFirst("role")?.Value;
+        
+        if (string.IsNullOrEmpty(userRole) || !_allowedRoles.Contains(userRole))
         {
-            var userRoles = principal.Claims
-                .Where(c => c.Type == ClaimTypes.Role)
-                .Select(c => c.Value);
-
-            // Compara ignorando maiúsculas/minúsculas
-            bool hasRole = userRoles.Any(userRole =>
-                _roles.Any(role => string.Equals(role, userRole, StringComparison.OrdinalIgnoreCase))
-            );
-
-            if (!hasRole)
-            {
-                context.Result = new ForbidResult();
-                return;
-            }
+            context.Result = new ForbidResult();
+            return;
         }
-    }
-
-    public void OnActionExecuted(ActionExecutedContext context)
-    {
-        // Nenhuma ação necessária após a execução
     }
 }

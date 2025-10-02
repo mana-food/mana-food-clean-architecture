@@ -2,48 +2,60 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using ManaFood.Application.Interfaces.Services;
+using ManaFood.Application.Mappings;
 using ManaFood.Domain.Entities;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ManaFood.Infrastructure.Auth;
 
-public class JwtService(
-    string secretKey,
-    int expirationMinutes,
-    string issuer,
-    string audience,
-    ITokenBlacklistService tokenBlacklistService)
-    : IJwtService
+public class JwtService : IJwtService
 {
-    public string GenerateToken(Guid idUser, string emailUser, UserType userType)
+    private readonly string _secretKey;
+    private readonly int _expirationMinutes;
+    private readonly string _issuer;
+    private readonly string _audience;
+    private readonly ITokenBlacklistService _blacklistService;
+
+    public JwtService(string secretKey, int expirationMinutes, string issuer, string audience, ITokenBlacklistService blacklistService)
     {
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
-        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        _secretKey = secretKey;
+        _expirationMinutes = expirationMinutes;
+        _issuer = issuer;
+        _audience = audience;
+        _blacklistService = blacklistService;
+    }
+
+    public string GenerateToken(User user)
+    {
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, idUser.ToString()),
-            new Claim(ClaimTypes.Email, emailUser),
-            new Claim(ClaimTypes.Role, userType.ToString()),
-            new Claim("created_at", DateTime.UtcNow.ToString("o"))
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.Name),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim("role", UserTypeMapper.ToRoleString(user.UserType)), 
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
         var token = new JwtSecurityToken(
-            issuer: issuer,
-            audience: audience,
+            issuer: _issuer,
+            audience: _audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(expirationMinutes),
-            signingCredentials: credentials);
+            expires: DateTime.UtcNow.AddMinutes(_expirationMinutes),
+            signingCredentials: credentials
+        );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
     public ClaimsPrincipal ValidateToken(string token)
     {
-        if (tokenBlacklistService.IsBlacklisted(token))
+        if (_blacklistService.IsBlacklisted(token))
             return null;
 
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
         var tokenHandler = new JwtSecurityTokenHandler();
 
         try
@@ -53,9 +65,11 @@ public class JwtService(
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = securityKey,
                 ValidateIssuer = true,
-                ValidIssuer = issuer,
+                ValidIssuer = _issuer,
                 ValidateAudience = true,
-                ValidAudience = audience
+                ValidAudience = _audience,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
             }, out SecurityToken validatedToken);
 
             return principal;
@@ -64,5 +78,10 @@ public class JwtService(
         {
             return null;
         }
+    }
+
+    public void InvalidateToken(string token)
+    {
+        _blacklistService.Add(token);
     }
 }

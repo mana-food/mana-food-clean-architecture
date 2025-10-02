@@ -8,9 +8,8 @@ using ManaFood.Application.UseCases.UserUseCase.Commands.UpdateUser;
 using ManaFood.Application.UseCases.UserUseCase.Commands.DeleteUser;
 using ManaFood.Application.UseCases.UserUseCase.Queries.GetUserByEmail;
 using ManaFood.Application.UseCases.UserUseCase.Queries.GetUserByCpf;
-using ManaFood.Domain.Entities;
-using ManaFood.WebAPI.Filters;
 using Microsoft.AspNetCore.Authorization;
+using ManaFood.Application.Constants;
 
 namespace ManaFood.WebAPI.Controllers
 {
@@ -18,7 +17,7 @@ namespace ManaFood.WebAPI.Controllers
     [Route("api/Users")]
     public class UserController(IMediator mediator) : ControllerBase
     {
-        [CustomAuthorize(UserType.ADMIN, UserType.MANAGER)]
+        [Authorize(Policy = Policies.ADMIN_OR_MANAGER)]
         [HttpGet]
         public async Task<ActionResult<UserDto>> GetAll(CancellationToken cancellationToken)
         {
@@ -26,7 +25,7 @@ namespace ManaFood.WebAPI.Controllers
             return Ok(result);
         }
 
-        [CustomAuthorize(UserType.ADMIN, UserType.MANAGER)]
+        [Authorize(Policy = Policies.ADMIN_OR_MANAGER)]
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<UserDto>> GetById(Guid id, CancellationToken cancellationToken)
         {
@@ -34,7 +33,7 @@ namespace ManaFood.WebAPI.Controllers
             return Ok(result);
         }
 
-        [CustomAuthorize(UserType.ADMIN, UserType.MANAGER, UserType.OPERATOR)]
+       [Authorize(Policy = Policies.DATA_QUERY)]
         [HttpGet("email/{email}")]
         public async Task<ActionResult<UserDto>> GetByEmail(string email, CancellationToken cancellationToken)
         {
@@ -42,7 +41,7 @@ namespace ManaFood.WebAPI.Controllers
             return Ok(result);
         }
 
-        [CustomAuthorize(UserType.ADMIN, UserType.MANAGER, UserType.OPERATOR)]
+       [Authorize(Policy = Policies.DATA_QUERY)]
         [HttpGet("cpf/{cpf}")]
         public async Task<ActionResult<UserDto>> GetByCpf(string cpf, CancellationToken cancellationToken)
         {
@@ -58,7 +57,7 @@ namespace ManaFood.WebAPI.Controllers
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
-        [CustomAuthorize(UserType.ADMIN, UserType.MANAGER)]
+        [Authorize(Policy = Policies.ADMIN_OR_MANAGER)]
         [HttpPut("{id}")]
         public async Task<ActionResult<UserDto>> Update(Guid id, UpdateUserCommand command, CancellationToken cancellationToken)
         {
@@ -69,7 +68,7 @@ namespace ManaFood.WebAPI.Controllers
             return Ok(result);
         }
         
-        [CustomAuthorize(UserType.ADMIN, UserType.MANAGER)]
+        [Authorize(Policy = Policies.ADMIN_OR_MANAGER)]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(Guid id, DeleteUserCommand command, CancellationToken cancellationToken)
         {

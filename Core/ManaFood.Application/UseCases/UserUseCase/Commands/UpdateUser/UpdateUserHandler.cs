@@ -3,6 +3,7 @@ using ManaFood.Application.Dtos;
 using ManaFood.Domain.Entities;
 using ManaFood.Application.Interfaces;
 using MediatR;
+using ManaFood.Domain.Enums;
 
 namespace ManaFood.Application.UseCases.UserUseCase.Commands.UpdateUser;
 

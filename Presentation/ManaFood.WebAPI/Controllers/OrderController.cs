@@ -7,10 +7,8 @@ using ManaFood.Application.UseCases.OrderUseCase.Commands.UpdateOrder;
 using ManaFood.Application.UseCases.OrderUseCase.Queries.GetAllOrders;
 using ManaFood.Application.UseCases.OrderUseCase.Queries.GetOrderById;
 using ManaFood.Application.UseCases.OrderUseCase.Queries.GetApprovedOrders;
-
-using ManaFood.Domain.Entities;
-using ManaFood.WebAPI.Filters;
 using Microsoft.AspNetCore.Authorization;
+using ManaFood.Application.Constants;
 
 namespace ManaFood.WebAPI.Controllers
 {
@@ -50,7 +48,7 @@ namespace ManaFood.WebAPI.Controllers
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
-        [CustomAuthorize(UserType.ADMIN, UserType.KITCHEN)]
+        [Authorize(Policy = Policies.ORDER_MANAGEMENT)]
         [HttpPut("{id}")]
         public async Task<ActionResult<OrderDto>> Update(Guid id, UpdateOrderCommand command, CancellationToken cancellationToken)
         {
@@ -61,7 +59,7 @@ namespace ManaFood.WebAPI.Controllers
             return Ok(result);
         }
 
-        [CustomAuthorize(UserType.ADMIN, UserType.MANAGER)]
+        [Authorize(Policy = Policies.ADMIN_OR_MANAGER)]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(Guid id, DeleteOrderCommand command, CancellationToken cancellationToken)
         {

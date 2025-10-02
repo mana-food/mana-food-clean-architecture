@@ -5,6 +5,7 @@ namespace ManaFood.Application.Interfaces.Services;
 
 public interface IJwtService
 {
-    string GenerateToken(Guid idUser, string emailUser, UserType userType);
+    string GenerateToken(User user);
     ClaimsPrincipal ValidateToken(string token);
+    void InvalidateToken(string token);
 }
