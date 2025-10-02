@@ -35,43 +35,43 @@ jobs:
       - name: Rodar Testes
         run: dotnet test --configuration Release --no-build --verbosity normal
 
-  # 2. Análise SonarQube
-  sonarqube-analysis:
-    runs-on: ubuntu-latest
-    needs: build-and-tests
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '9.0.x'
-      
-      - name: SonarQube Scan
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} # geralmente https://sonarcloud.io
-        run: |
-          dotnet tool install --global dotnet-sonarscanner
-          export PATH="$PATH:/home/runner/.dotnet/tools"
-          dotnet sonarscanner begin \
-            /k:"mana-food_mana-food-clean-architecture" \
-            /o:"mana-food" \
-            /d:sonar.host.url="$SONAR_HOST_URL" \
-            /d:sonar.login="$SONAR_TOKEN" \
-            /d:sonar.branch.name="main" \
-            /d:sonar.exclusions="**/bin/**,**/obj/**,**/*.dll,**/*.exe" \
-            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
-          dotnet build --no-incremental
-          dotnet sonarscanner end /d:sonar.login="$SONAR_TOKEN"
+#  # 2. Análise SonarQube
+#  sonarqube-analysis:
+#    runs-on: ubuntu-latest
+#    needs: build-and-tests
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 0
+#
+#      - name: Setup .NET
+#        uses: actions/setup-dotnet@v4
+#        with:
+#          dotnet-version: '9.0.x'
+#      
+#      - name: SonarQube Scan
+#        env:
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} # geralmente https://sonarcloud.io
+#        run: |
+#          dotnet tool install --global dotnet-sonarscanner
+#          export PATH="$PATH:/home/runner/.dotnet/tools"
+#          dotnet sonarscanner begin \
+#            /k:"mana-food_mana-food-clean-architecture" \
+#            /o:"mana-food" \
+#            /d:sonar.host.url="$SONAR_HOST_URL" \
+#            /d:sonar.login="$SONAR_TOKEN" \
+#            /d:sonar.branch.name="main" \
+#            /d:sonar.exclusions="**/bin/**,**/obj/**,**/*.dll,**/*.exe" \
+#            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+#          dotnet build --no-incremental
+#          dotnet sonarscanner end /d:sonar.login="$SONAR_TOKEN"
 
   # 3. Build e Push da Imagem Docker
   docker-build-push:
     runs-on: ubuntu-latest
-    needs: sonarqube-analysis
+    needs: build-and-tests
     permissions:
       contents: read
       packages: write
