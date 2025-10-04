@@ -239,6 +239,24 @@ Segue um passo a passo simples para rodar os containers do projeto:
    ![Minikube Dashboard](Assets/Minikube_ManaFood.png)
 ---
 
+## API Gateway - Configuração das Rotas
+
+Para utilizar o API Gateway, você precisará configurar os endereços da sua API e Lambda através de variáveis de ambiente. Estas variáveis devem conter as URLs públicas ou locais dos seus serviços:
+
+1. Configure a variável `API_DESTINATION` com a URL da sua API principal:
+   ```sh
+   export API_DESTINATION="sua-url-da-api"
+   ```
+
+2. Configure a variável `LAMBDA_DESTINATION` com a URL do seu serviço Lambda:
+   ```sh
+   export LAMBDA_DESTINATION="sua-url-lambda"
+   ```
+
+Importante: Use as URLs específicas do seu ambiente de execução. Estas URLs devem ser as mesmas que você usa para acessar seus serviços.
+
+---
+
 ### 4. Gerar migrations com EF Core
 
 1. Instale a ferramenta do EF:
