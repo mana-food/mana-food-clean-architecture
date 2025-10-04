@@ -32,7 +32,6 @@ services:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-       # - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql # Habilitar se precisar de usar script sql de inicialização
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-psenha123"]
       interval: 10s
