@@ -8,6 +8,7 @@ using ManaFood.Application.Interfaces.Services;
 using ManaFood.Application.Services;
 
 using Microsoft.OpenApi.Models;
+using ManaFood.WebAPI.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,11 +76,10 @@ app.UseSwaggerUI(c =>
 
 app.UseHttpsRedirection();
 
-// app.UseMiddleware<ManaFood.WebAPI.Middlewares.JwtAuthenticationMiddleware>();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseMiddleware<JwtAuthenticationMiddleware>();
 
 app.MapControllers();
 app.Run();
