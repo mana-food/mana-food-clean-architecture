@@ -82,4 +82,7 @@ app.UseAuthorization();
 app.UseMiddleware<JwtAuthenticationMiddleware>();
 
 app.MapControllers();
+
+app.MapGet("/healthz", () => Results.Ok(new { status = "ok" }));
+
 app.Run();
