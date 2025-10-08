@@ -49,21 +49,87 @@ public static class ServiceExtensions
 
     private static string BuildFromSecret(string secretArn)
     {
-        var client = new AmazonSecretsManagerClient(Amazon.RegionEndpoint.SAEast1);
-        var response = client.GetSecretValueAsync(new GetSecretValueRequest
+        try
         {
-            SecretId = secretArn
-        }).GetAwaiter().GetResult();
+            using var client = new AmazonSecretsManagerClient(Amazon.RegionEndpoint.SAEast1);
+            var response = client.GetSecretValueAsync(new GetSecretValueRequest
+            {
+                SecretId = secretArn
+            }).GetAwaiter().GetResult();
 
-        var doc = JsonDocument.Parse(response.SecretString);
-        var host = doc.RootElement.GetProperty("host").GetString();
-        var port = doc.RootElement.GetProperty("port").GetInt32();
-        var user = doc.RootElement.GetProperty("username").GetString();
-        var pass = doc.RootElement.GetProperty("password").GetString();
-        var db = doc.RootElement.TryGetProperty("dbname", out var dbEl)
-            ? dbEl.GetString()
-            : "manafooddb";
+            if (string.IsNullOrWhiteSpace(response.SecretString))
+                throw new InvalidOperationException($"Secret {secretArn} retornou conteúdo vazio.");
 
-        return $"Server={host};Port={port};Database={db};User={user};Password={pass};SslMode=Preferred;";
+            using var doc = JsonDocument.Parse(response.SecretString);
+            var root = doc.RootElement;
+
+            string? host = null;
+            int port = 3306;
+            string? username = null;
+            string? password = null;
+            string dbname = "manafooddb";
+
+
+            if (root.TryGetProperty("host", out var hostEl))
+            {
+                host = hostEl.GetString();
+            }
+            
+            
+            if (string.IsNullOrWhiteSpace(host) && root.TryGetProperty("dbClusterIdentifier", out var clusterEl))
+            {
+                var clusterId = clusterEl.GetString();
+                host = Environment.GetEnvironmentVariable("DATABASE_HOST");
+                
+                if (string.IsNullOrWhiteSpace(host))
+                    throw new InvalidOperationException(
+                        $"Secret não contém 'host' e DATABASE_HOST não está definida. ClusterID: {clusterId}");
+            }
+
+            if (string.IsNullOrWhiteSpace(host))
+                throw new InvalidOperationException("Não foi possível determinar o host do banco de dados.");
+
+            // Port
+            if (root.TryGetProperty("port", out var portEl))
+            {
+                port = portEl.GetInt32();
+            }
+
+            // Username (obrigatório)
+            if (root.TryGetProperty("username", out var userEl))
+            {
+                username = userEl.GetString();
+            }
+            else
+            {
+                throw new InvalidOperationException("Secret não contém 'username'.");
+            }
+
+            // Password (obrigatório)
+            if (root.TryGetProperty("password", out var passEl))
+            {
+                password = passEl.GetString();
+            }
+            else
+            {
+                throw new InvalidOperationException("Secret não contém 'password'.");
+            }
+
+            // Database name
+            if (root.TryGetProperty("dbname", out var dbnameEl))
+            {
+                dbname = dbnameEl.GetString() ?? "manafooddb";
+            }
+
+            return $"Server={host};Port={port};Database={dbname};User={username};Password={password};SslMode=Preferred;";
+        }
+        catch (AmazonSecretsManagerException ex)
+        {
+            throw new InvalidOperationException($"Erro ao acessar Secrets Manager: {ex.Message}", ex);
+        }
+        catch (JsonException ex)
+        {
+            throw new InvalidOperationException($"Erro ao parsear JSON do secret: {ex.Message}", ex);
+        }
     }
 }
