@@ -2,25 +2,21 @@ using Yarp.ReverseProxy.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var apiBaseUrl = Environment.GetEnvironmentVariable("API_BASE_URL") 
-                 ?? "http://mana-food-api-service:8080";
-var lambdaUrl = Environment.GetEnvironmentVariable("LAMBDA_URL") 
-                ?? throw new InvalidOperationException("LAMBDA_URL é obrigatória");
+// Variáveis de ambiente injetadas via ConfigMap/Secret
+var apiBase = Environment.GetEnvironmentVariable("API_BASE_URL");   // ex: http://mana-food-api-service:8080
+var lambdaUrl = Environment.GetEnvironmentVariable("LAMBDA_URL");   // ex: https://xxxx.execute-api.us-east-1.amazonaws.com/prod
 
-Console.WriteLine($"🔗 API Base URL: {apiBaseUrl}");
-Console.WriteLine($"⚡ Lambda URL: {lambdaUrl}");
-
-// Configurar YARP dinamicamente
+// Rotas estáticas (independentes dos destinos)
 var routes = new[]
 {
     new RouteConfig
     {
         RouteId = "apiRoute",
-        ClusterId = "apiCluster", 
+        ClusterId = "apiCluster",
         Match = new RouteMatch { Path = "/manafood/{**catch-all}" },
         Transforms = new[]
         {
-            new Dictionary<string, string> { { "PathRemovePrefix", "/manafood" } }
+            new Dictionary<string,string> { { "PathRemovePrefix", "/manafood" } }
         }
     },
     new RouteConfig
@@ -30,41 +26,60 @@ var routes = new[]
         Match = new RouteMatch { Path = "/lambda/{**catch-all}" },
         Transforms = new[]
         {
-            new Dictionary<string, string> { { "PathRemovePrefix", "/lambda" } }
+            new Dictionary<string,string> { { "PathRemovePrefix", "/lambda" } }
         }
     }
 };
 
-var clusters = new[]
+var clusters = new List<ClusterConfig>();
+
+if (!string.IsNullOrWhiteSpace(apiBase))
 {
-    new ClusterConfig
+    clusters.Add(new ClusterConfig
     {
         ClusterId = "apiCluster",
         Destinations = new Dictionary<string, DestinationConfig>
         {
-            { "apiDestination", new DestinationConfig { Address = apiBaseUrl } }
+            {
+                "apiDestination",
+                new DestinationConfig
+                {
+                    Address = apiBase.EndsWith('/') ? apiBase : apiBase + "/"
+                }
+            }
         }
-    },
-    new ClusterConfig
+    });
+}
+
+if (!string.IsNullOrWhiteSpace(lambdaUrl))
+{
+    clusters.Add(new ClusterConfig
     {
-        ClusterId = "lambdaCluster", 
+        ClusterId = "lambdaCluster",
         Destinations = new Dictionary<string, DestinationConfig>
         {
-            { "lambdaDestination", new DestinationConfig { Address = lambdaUrl } }
+            {
+                "lambdaDestination",
+                new DestinationConfig
+                {
+                    Address = lambdaUrl.EndsWith('/') ? lambdaUrl : lambdaUrl + "/"
+                }
+            }
         }
-    }
-};
+    });
+}
 
-// Adicionar YARP configurado dinamicamente
-builder.Services.AddSingleton<IProxyConfigProvider>(
-    new InMemoryConfigProvider(routes, clusters));
-
-builder.Services.AddReverseProxy();
+// Registra YARP com configuração em memória (dinâmica via env vars)
+builder.Services
+    .AddReverseProxy()
+    .LoadFromMemory(routes, clusters);
 
 var app = builder.Build();
 
-app.MapReverseProxy();
+// Endpoint de health para probes
+app.MapGet("/healthz", () => Results.Ok(new { status = "ok" }));
 
-Console.WriteLine("🚀 Gateway iniciado - configuração dinâmica aplicada");
+// Reverse proxy
+app.MapReverseProxy();
 
 app.Run();
