@@ -7,6 +7,12 @@
 ![Diagrama de infraestrutura aplicada na fase II](Assets/Kubernetes_ManaFood.png)
 ![Minikube - Infraestrutura aplicada na fase II](Assets/Minikube_ManaFood.png)
 
+## Diagrama Entidade Relacionamento
+![Diagrama Entidade Relacionamento - Fase III](Assets/DiagramaEntidadeRelacionamento.jpeg)
+
+## Layout Cloud
+![Layout Cloud - Fase III](Assets/DesenhoDeArquiteturaCloud.jpeg)
+
 ## Estrutura de Pastas
 
 ```
